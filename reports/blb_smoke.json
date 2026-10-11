@@ -1,0 +1,42 @@
+{
+  "source_url": "https://17lands-public.s3.amazonaws.com/analysis_data/game_data/game_data_public.BLB.PremierDraft.csv.gz",
+  "source_sha256": "61fed2a4db5854ca9f247eba9ea4176cf70a25ee253024928963335d32dbf281",
+  "expansion": "BLB",
+  "format": "PremierDraft",
+  "max_rows": 20000,
+  "seed": 42,
+  "test_fraction": 0.2,
+  "observed_count": 2,
+  "basic_lands_included": true,
+  "sampling": "file prefix",
+  "loader": {
+    "rows_read": 20000,
+    "duplicate_rows": 15739,
+    "incomplete_rows": 0,
+    "decks_loaded": 4261
+  },
+  "train_decks": 3441,
+  "test_decks": 820,
+  "train_events": 2756,
+  "test_events": 689,
+  "evaluation_cases": 820,
+  "vocabulary_size": 274,
+  "deck_size_range": [
+    40,
+    49
+  ],
+  "cooccurrence": {
+    "Recall@5": 0.15292494988646035,
+    "Recall@10": 0.24861083423486804,
+    "Recall@20": 0.3923829804407049,
+    "MRR": 0.9638471961642695,
+    "target_coverage": 0.9999386879215205
+  },
+  "popularity": {
+    "Recall@5": 0.10583616712273944,
+    "Recall@10": 0.16582363662234892,
+    "Recall@20": 0.2603608189697064,
+    "MRR": 0.7235569105691052,
+    "target_coverage": 0.9999386879215205
+  }
+}
