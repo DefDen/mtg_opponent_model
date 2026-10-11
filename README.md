@@ -52,14 +52,33 @@ explicitly before fitting and evaluation.
 
 ## Historical data integration
 
-The intended source is [17Lands public datasets](https://www.17lands.com/public_datasets).
-No dataset has been downloaded and no historical results are claimed yet.
-A future adapter will inspect an actual game-data file, extract complete player
-main decks, and retain copy counts. Deduplicate repeated game rows by event
-and deck configuration; retain event IDs so revisions cannot cross partitions.
-Do not merge identical lists across unrelated events. The core should receive
-canonical records rather than source-specific columns. Attribute 17Lands
-according to the dataset license when publishing results.
+The source is [17Lands public datasets](https://www.17lands.com/public_datasets),
+licensed CC BY 4.0 unless otherwise noted. Data attribution: 17Lands.
+`SeventeenLandsLoader` in `seventeenlands.py` reads plain or gzip game CSVs.
+It extracts `deck_` copy counts and groups by `draft_id`. It ignores sideboards
+and drawn/hand columns, deduplicates identical configurations within each
+draft, and skips decks with fewer than 40 cards. Malformed counts, missing
+metadata, and unexpected sets/formats raise errors. Different configurations
+remain separate records but stay together in the split; events with more
+configurations therefore receive more weight. Raw data is ignored by Git.
+
+Download and run the historical experiment:
+
+```bash
+mkdir -p data
+curl --fail --location --output data/game_data_public.BLB.PremierDraft.csv.gz \
+  https://17lands-public.s3.amazonaws.com/analysis_data/game_data/game_data_public.BLB.PremierDraft.csv.gz
+.venv/bin/python examples/historical.py data/game_data_public.BLB.PremierDraft.csv.gz
+```
+
+The default reads the first 20,000 game rows, not a random sample. Use
+`--max-rows 0` to read the full file. Other options include `--observed-count`,
+`--seed`, `--expansion`, `--format`, and `--output`. The runner writes a JSON
+report with source checksum, counts, settings, and metrics, plus a vocabulary
+JSON alongside it. It compares co-occurrence with training-card popularity,
+excluding observed cards in both models. Models are fitted anew on each run.
+
+See [the historical smoke results](reports/blb_smoke.md) for the initial run.
 
 Uniformly hiding cards tests deck reconstruction; it does not reproduce the
 biased sequence of cards revealed during actual play. Action-conditioned
