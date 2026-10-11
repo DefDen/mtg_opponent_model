@@ -1,0 +1,337 @@
+{
+  "source": "17Lands public datasets, CC BY 4.0",
+  "replay_source_url": "https://17lands-public.s3.amazonaws.com/analysis_data/replay_data/replay_data_public.BLB.PremierDraft.csv.gz",
+  "input_sha256": {
+    "data/replay_sample.BLB.PremierDraft.csv.gz": "cb7684e6d2b8503a04a2afa83de290219b765c169275524ab04d17c7b51e9b25",
+    "data/cards.csv": "c1d4b32fc84cfbdac4ec805fe486732b73ee04b7d757134479848e75e96cd82b",
+    "data/game_data_public.BLB.PremierDraft.csv.gz": "61fed2a4db5854ca9f247eba9ea4176cf70a25ee253024928963335d32dbf281"
+  },
+  "settings": {
+    "seed": 42,
+    "max_games": 500,
+    "max_deck_rows": 20000,
+    "max_turn": 3,
+    "basic_lands_included": true,
+    "zero_mulligans_only": true
+  },
+  "replay_rows": 500,
+  "replay_events": 110,
+  "held_out_events": 22,
+  "held_out_games": 104,
+  "training_decks": 4230,
+  "training_event_overlap_with_test": 0,
+  "evaluated_games": 92,
+  "evaluated_snapshots": 520,
+  "stopped_games_by_reason": {
+    "unaccounted_hand_movement": 12,
+    "mulligan": 12,
+    "departure_not_in_hand": 1
+  },
+  "unsupported_prior_snapshots": 2,
+  "card_universe_size": 276,
+  "aggregation": "average snapshots within game, then average games",
+  "metrics": {
+    "public_movements": {
+      "Recall@5": 0.2968637853692202,
+      "Recall@10": 0.3763845755693583,
+      "Recall@20": 0.5120013802622497,
+      "MRR": 0.7446346124227524,
+      "Brier": 0.01609554225948161
+    },
+    "no_history": {
+      "Recall@5": 0.26338293650793654,
+      "Recall@10": 0.30247800207039344,
+      "Recall@20": 0.4034791235334711,
+      "MRR": 0.5070466336130515,
+      "Brier": 0.017340279425861714
+    }
+  },
+  "examples": [
+    {
+      "game_id": "96ad616caa294bf0b2f9315096e034d1:1:1",
+      "public_input": {
+        "opening_hand_size": 7,
+        "steps": [
+          {
+            "turn": 1,
+            "active_player": "observer",
+            "draws": 0,
+            "departed": [],
+            "hand_size": 7
+          },
+          {
+            "turn": 1,
+            "active_player": "target",
+            "draws": 1,
+            "departed": [
+              "Mountain"
+            ],
+            "hand_size": 7
+          }
+        ]
+      },
+      "actual_hand_evaluation_only": {
+        "Mountain": 1,
+        "Three Tree Rootweaver": 1,
+        "Thistledown Players": 1,
+        "Brazen Collector": 1,
+        "Plains": 1,
+        "Forest": 1,
+        "Rust-Shield Rampager": 1
+      },
+      "top_predictions": [
+        [
+          "Mountain",
+          0.741288637365469
+        ],
+        [
+          "Plains",
+          0.2626694824249364
+        ],
+        [
+          "Swamp",
+          0.2511775589914469
+        ],
+        [
+          "Forest",
+          0.22823570348170555
+        ],
+        [
+          "Island",
+          0.1388271835811069
+        ],
+        [
+          "Take Out the Trash",
+          0.13844160719908163
+        ],
+        [
+          "Agate Assault",
+          0.10138057464263343
+        ],
+        [
+          "Roughshod Duo",
+          0.08773072902985755
+        ],
+        [
+          "Alania's Pathmaker",
+          0.08697030652652267
+        ],
+        [
+          "Raccoon Rallier",
+          0.08244346713186383
+        ]
+      ]
+    },
+    {
+      "game_id": "96ad616caa294bf0b2f9315096e034d1:1:1",
+      "public_input": {
+        "opening_hand_size": 7,
+        "steps": [
+          {
+            "turn": 1,
+            "active_player": "observer",
+            "draws": 0,
+            "departed": [],
+            "hand_size": 7
+          },
+          {
+            "turn": 1,
+            "active_player": "target",
+            "draws": 1,
+            "departed": [
+              "Mountain"
+            ],
+            "hand_size": 7
+          },
+          {
+            "turn": 2,
+            "active_player": "observer",
+            "draws": 0,
+            "departed": [],
+            "hand_size": 7
+          },
+          {
+            "turn": 2,
+            "active_player": "target",
+            "draws": 1,
+            "departed": [
+              "Forest",
+              "Brazen Collector"
+            ],
+            "hand_size": 6
+          }
+        ]
+      },
+      "actual_hand_evaluation_only": {
+        "Oakhollow Village": 1,
+        "Mountain": 1,
+        "Three Tree Rootweaver": 1,
+        "Thistledown Players": 1,
+        "Plains": 1,
+        "Rust-Shield Rampager": 1
+      },
+      "top_predictions": [
+        [
+          "Mountain",
+          0.7376156944835075
+        ],
+        [
+          "Forest",
+          0.7176650911688277
+        ],
+        [
+          "Take Out the Trash",
+          0.1509281192537107
+        ],
+        [
+          "Roughshod Duo",
+          0.12629981514964997
+        ],
+        [
+          "Rust-Shield Rampager",
+          0.11885478823730465
+        ],
+        [
+          "Alania's Pathmaker",
+          0.1142723428766167
+        ],
+        [
+          "Bakersbane Duo",
+          0.10899598693919557
+        ],
+        [
+          "Raccoon Rallier",
+          0.10366926959689376
+        ],
+        [
+          "Longstalk Brawl",
+          0.10256379692701498
+        ],
+        [
+          "Wandertale Mentor",
+          0.09543020947163382
+        ]
+      ]
+    },
+    {
+      "game_id": "96ad616caa294bf0b2f9315096e034d1:1:1",
+      "public_input": {
+        "opening_hand_size": 7,
+        "steps": [
+          {
+            "turn": 1,
+            "active_player": "observer",
+            "draws": 0,
+            "departed": [],
+            "hand_size": 7
+          },
+          {
+            "turn": 1,
+            "active_player": "target",
+            "draws": 1,
+            "departed": [
+              "Mountain"
+            ],
+            "hand_size": 7
+          },
+          {
+            "turn": 2,
+            "active_player": "observer",
+            "draws": 0,
+            "departed": [],
+            "hand_size": 7
+          },
+          {
+            "turn": 2,
+            "active_player": "target",
+            "draws": 1,
+            "departed": [
+              "Forest",
+              "Brazen Collector"
+            ],
+            "hand_size": 6
+          },
+          {
+            "turn": 3,
+            "active_player": "observer",
+            "draws": 0,
+            "departed": [],
+            "hand_size": 6
+          },
+          {
+            "turn": 3,
+            "active_player": "target",
+            "draws": 1,
+            "departed": [
+              "Oakhollow Village",
+              "Clifftop Lookout"
+            ],
+            "hand_size": 5
+          }
+        ]
+      },
+      "actual_hand_evaluation_only": {
+        "Mountain": 1,
+        "Three Tree Rootweaver": 1,
+        "Thistledown Players": 1,
+        "Plains": 1,
+        "Rust-Shield Rampager": 1
+      },
+      "top_predictions": [
+        [
+          "Forest",
+          0.6461693548387097
+        ],
+        [
+          "Mountain",
+          0.6305874805934104
+        ],
+        [
+          "Wandertale Mentor",
+          0.16255252100840342
+        ],
+        [
+          "Rust-Shield Rampager",
+          0.13725490196078424
+        ],
+        [
+          "Bakersbane Duo",
+          0.13130252100840342
+        ],
+        [
+          "Brambleguard Veteran",
+          0.12605042016806722
+        ],
+        [
+          "Treeguard Duo",
+          0.12088585434173679
+        ],
+        [
+          "Take Out the Trash",
+          0.1205357142857143
+        ],
+        [
+          "Longstalk Brawl",
+          0.11195728291316537
+        ],
+        [
+          "Raccoon Rallier",
+          0.11073975044563267
+        ]
+      ]
+    }
+  ],
+  "limitations": [
+    "File-prefix sample",
+    "Early half-turn summaries only",
+    "Labels are audited tracked-player hands, viewed from their opponent's perspective",
+    "Random departures ignore strategic card selection and passes",
+    "Uniform opening hands ignore Arena hand smoothing",
+    "Library changes from milling, scrying, or effects outside ordinary draws are ignored",
+    "Mulligans excluded; snapshots stop when movement accounting fails",
+    "Casting zone provenance is unavailable; matching accounting is only a consistency check",
+    "Draw counts and hand sizes are derived from lengths, never private card identities",
+    "No held-out decklists or private hand identities passed to the model",
+    "No-compatible-prior snapshots are excluded and counted"
+  ]
+}

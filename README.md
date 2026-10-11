@@ -81,7 +81,61 @@ excluding observed cards in both models. Models are fitted anew on each run.
 See [the historical smoke results](reports/blb_smoke.md) for the initial run.
 
 Uniformly hiding cards tests deck reconstruction; it does not reproduce the
-biased sequence of cards revealed during actual play. Action-conditioned
-inference, remaining-copy prediction, sideboards, and replay integration are
-later milestones. Pair counting is quadratic in each deck's distinct cards,
-which is appropriate for this initial Limited baseline.
+biased sequence of cards revealed during actual play. Pair counting is
+quadratic in each deck's distinct cards, which is appropriate for this baseline.
+
+## Hand prediction from replay history
+
+The next baseline predicts **the probability of holding at least one copy of
+each card right now**. It uses public draw counts, hand sizes, and cards played,
+cast, or publicly discarded. It does not yet infer information from passing,
+attacking, mana availability, or strategic card selection.
+
+- `replays.py` normalizes Arena IDs with the 17Lands card mapping, reconstructs
+  early-turn hand movements, and separates `HandSnapshot.actual_hand` labels
+  from `PublicHistory` inputs. Draw identities and opening hands are private;
+  only their lengths cross into public inputs. Replay records contain one game
+  per wide CSV row, with separate columns for each half-turn.
+- `hands.py` implements a mixture over historical decks, retaining copy counts.
+  Public departures reweight compatible decks by their without-replacement
+  likelihoods. Given each deck, the residual hand is assumed to be a uniform
+  sample of the remaining cards; an exact hypergeometric calculation gives
+  per-card holding probabilities. Marginals do not sum to one. Played cards
+  can still be held if other copies remain.
+- `examples/replay_hands.py` compares this model with the same deck prior using
+  only current hand size. Held-out draft IDs are excluded from **all** prior
+  decks. Evaluation averages snapshots within games, then averages games.
+  Brier score measures binary card-presence probability error across a fixed
+  schema-derived universe (lower is better). Zero-probability cards are excluded
+  from ranking, and unknown targets remain in recall denominators.
+
+Prepare a small replay sample and run:
+
+```bash
+.venv/bin/python examples/download_replay_sample.py
+curl --fail --location --output data/cards.csv \
+  https://17lands-public.s3.amazonaws.com/analysis_data/cards/cards.csv
+.venv/bin/python examples/replay_hands.py --output reports/blb_hands_smoke.json
+```
+
+The downloader requests only the first 8 MiB of compressed replay data, then
+writes 500 complete game rows to a valid gzip file. If a larger sample cannot
+fit, increase `--compressed-bytes`. The experiment also needs the historical
+game-data file downloaded above. The report includes public histories, top
+predictions, actual hands marked evaluation-only, exclusion counts, and source
+checksums. See [the hand experiment report](reports/blb_hands_smoke.md).
+
+This first replay experiment uses the first three rounds and zero-mulligan
+games only. It stops a game when recorded movements fail to reproduce the
+exact hand, or when a tutor is recorded. Off-turn draws, returns, flash
+creatures, and other unrepresented movements can therefore truncate games.
+No-compatible-prior snapshots are excluded and counted. Consistent hand
+accounting does not prove a cast came from hand: zone provenance and exact
+within-turn event order are unavailable. The model ignores library changes
+from milling, scrying, and other effects. Its random-departure policy and uniform
+opening hands ignore player strategy and Arena hand smoothing. Filtering and
+the file-prefix sample introduce selection bias; these are smoke results.
+
+Future work: broaden reliable event reconstruction, handle mulligans and
+library/zone effects, and learn action likelihoods before interpreting passes
+and other choices as evidence about hidden cards.
