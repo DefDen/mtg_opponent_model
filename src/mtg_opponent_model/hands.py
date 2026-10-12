@@ -41,7 +41,9 @@ class HandModel:
     identities update deck weights without replacement. Given a compatible
     deck, the current hand is a uniform subset of its remaining cards. This is
     exact for the assumed random-departure policy, not a strategic play model.
-    Mulligans, tutors, returns, and casting from other zones are unsupported.
+    Tutors, returns, and casting from other zones are unsupported. A smaller
+    opening size can approximate a kept mulligan hand, but keep decisions and
+    London-mulligan bottoming order are not modeled.
     """
 
     def __init__(self, decks: Iterable[DeckRecord]) -> None:

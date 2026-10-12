@@ -1,0 +1,1069 @@
+{
+  "source": "17Lands public datasets, CC BY 4.0",
+  "inputs": {
+    "replays": "data/replay_sample_5000.BLB.PremierDraft.csv.gz",
+    "cards": "data/cards.csv"
+  },
+  "input_sha256": {
+    "data/replay_sample_5000.BLB.PremierDraft.csv.gz": "f2bc53322ce3d53b3602e5ed12df76532cb98a92c3ac66abea5f612faf99a3c4",
+    "data/cards.csv": "c1d4b32fc84cfbdac4ec805fe486732b73ee04b7d757134479848e75e96cd82b"
+  },
+  "replay_rows": 5000,
+  "scope": "All sampled games; reconstruction coverage, not prediction performance",
+  "limitations": [
+    "File-prefix sample",
+    "Private labels used only for evaluation diagnostics",
+    "Matching hands do not establish casting zone provenance",
+    "No missing movements are inferred from private labels"
+  ],
+  "audits": [
+    {
+      "max_turn": 3,
+      "allow_mulligans": false,
+      "unique_games": 5000,
+      "games_with_snapshots": 4270,
+      "valid_snapshots": 24501,
+      "games_without_reconstruction_stop": 3773,
+      "stops_by_reason": {
+        "departure_not_in_hand": 15,
+        "mulligan": 705,
+        "opening_hand_size": 1,
+        "tutor": 33,
+        "unaccounted_hand_movement": 473
+      },
+      "stops_by_turn_player_reason": {
+        "1:observer:unaccounted_hand_movement": 42,
+        "2:observer:unaccounted_hand_movement": 120,
+        "2:target:tutor": 7,
+        "2:target:unaccounted_hand_movement": 30,
+        "3:observer:unaccounted_hand_movement": 196,
+        "3:target:departure_not_in_hand": 15,
+        "3:target:tutor": 26,
+        "3:target:unaccounted_hand_movement": 85
+      },
+      "unaccounted_movement_sizes": {
+        "added=0,missing=1": 207,
+        "added=0,missing=2": 9,
+        "added=1,missing=0": 230,
+        "added=1,missing=1": 12,
+        "added=1,missing=2": 1,
+        "added=2,missing=0": 2,
+        "added=2,missing=1": 12
+      },
+      "stop_examples_evaluation_only": [
+        {
+          "game_id": "deaa4cdcd3e84d8e8b5a0ea34a0f9d79:4:1",
+          "reason": "unaccounted_hand_movement",
+          "valid_snapshots_before_stop": 3,
+          "turn": 2,
+          "active_player": "target",
+          "added_cards_evaluation_only": {
+            "Thought-Stalker Warlock": 1
+          },
+          "missing_cards_evaluation_only": {}
+        },
+        {
+          "game_id": "890a0a636d3c4e3197788ee752a41ae7:1:1",
+          "reason": "unaccounted_hand_movement",
+          "valid_snapshots_before_stop": 2,
+          "turn": 2,
+          "active_player": "target",
+          "added_cards_evaluation_only": {
+            "Daggerfang Duo": 1
+          },
+          "missing_cards_evaluation_only": {}
+        },
+        {
+          "game_id": "ac4bf37186d643d1b885b03cfd2ce00b:6:1",
+          "reason": "unaccounted_hand_movement",
+          "valid_snapshots_before_stop": 2,
+          "turn": 2,
+          "active_player": "observer",
+          "added_cards_evaluation_only": {},
+          "missing_cards_evaluation_only": {
+            "Warren Elder": 1
+          }
+        },
+        {
+          "game_id": "a04095e16fea49d693d0c5964587d924:5:1",
+          "reason": "unaccounted_hand_movement",
+          "valid_snapshots_before_stop": 5,
+          "turn": 3,
+          "active_player": "observer",
+          "added_cards_evaluation_only": {},
+          "missing_cards_evaluation_only": {
+            "Mouse Trapper": 1
+          }
+        },
+        {
+          "game_id": "31108c6f43b44c72985febe6c0f963c9:1:1",
+          "reason": "unaccounted_hand_movement",
+          "valid_snapshots_before_stop": 4,
+          "turn": 3,
+          "active_player": "observer",
+          "added_cards_evaluation_only": {
+            "Darkstar Augur": 1
+          },
+          "missing_cards_evaluation_only": {}
+        },
+        {
+          "game_id": "31108c6f43b44c72985febe6c0f963c9:4:1",
+          "reason": "unaccounted_hand_movement",
+          "valid_snapshots_before_stop": 4,
+          "turn": 3,
+          "active_player": "observer",
+          "added_cards_evaluation_only": {
+            "Curious Forager": 1
+          },
+          "missing_cards_evaluation_only": {}
+        },
+        {
+          "game_id": "739990a15d5a4ff4b084348e89e200f1:1:1",
+          "reason": "unaccounted_hand_movement",
+          "valid_snapshots_before_stop": 1,
+          "turn": 1,
+          "active_player": "observer",
+          "added_cards_evaluation_only": {},
+          "missing_cards_evaluation_only": {
+            "Swamp": 1
+          }
+        },
+        {
+          "game_id": "739990a15d5a4ff4b084348e89e200f1:6:1",
+          "reason": "unaccounted_hand_movement",
+          "valid_snapshots_before_stop": 4,
+          "turn": 3,
+          "active_player": "observer",
+          "added_cards_evaluation_only": {},
+          "missing_cards_evaluation_only": {
+            "Plumecreed Escort": 1
+          }
+        },
+        {
+          "game_id": "67492806324948b792d07e6769347732:2:1",
+          "reason": "unaccounted_hand_movement",
+          "valid_snapshots_before_stop": 5,
+          "turn": 3,
+          "active_player": "observer",
+          "added_cards_evaluation_only": {},
+          "missing_cards_evaluation_only": {
+            "Valley Floodcaller": 1
+          }
+        },
+        {
+          "game_id": "6aab5ba90d9940099534c0e1462038a1:1:1",
+          "reason": "unaccounted_hand_movement",
+          "valid_snapshots_before_stop": 5,
+          "turn": 3,
+          "active_player": "target",
+          "added_cards_evaluation_only": {
+            "Sunshower Druid": 1
+          },
+          "missing_cards_evaluation_only": {}
+        }
+      ]
+    },
+    {
+      "max_turn": 3,
+      "allow_mulligans": true,
+      "unique_games": 5000,
+      "games_with_snapshots": 4973,
+      "valid_snapshots": 28548,
+      "games_without_reconstruction_stop": 4396,
+      "stops_by_reason": {
+        "departure_not_in_hand": 25,
+        "opening_hand_size": 1,
+        "tutor": 38,
+        "unaccounted_hand_movement": 540
+      },
+      "stops_by_turn_player_reason": {
+        "1:observer:unaccounted_hand_movement": 47,
+        "2:observer:unaccounted_hand_movement": 133,
+        "2:target:departure_not_in_hand": 1,
+        "2:target:tutor": 7,
+        "2:target:unaccounted_hand_movement": 35,
+        "3:observer:unaccounted_hand_movement": 233,
+        "3:target:departure_not_in_hand": 24,
+        "3:target:tutor": 31,
+        "3:target:unaccounted_hand_movement": 92
+      },
+      "unaccounted_movement_sizes": {
+        "added=0,missing=1": 241,
+        "added=0,missing=2": 13,
+        "added=1,missing=0": 253,
+        "added=1,missing=1": 15,
+        "added=1,missing=2": 1,
+        "added=2,missing=0": 2,
+        "added=2,missing=1": 15
+      },
+      "stop_examples_evaluation_only": [
+        {
+          "game_id": "deaa4cdcd3e84d8e8b5a0ea34a0f9d79:3:1",
+          "reason": "departure_not_in_hand",
+          "valid_snapshots_before_stop": 4,
+          "turn": 3,
+          "active_player": "target",
+          "departure_card_evaluation_only": "Swamp"
+        },
+        {
+          "game_id": "deaa4cdcd3e84d8e8b5a0ea34a0f9d79:4:1",
+          "reason": "unaccounted_hand_movement",
+          "valid_snapshots_before_stop": 3,
+          "turn": 2,
+          "active_player": "target",
+          "added_cards_evaluation_only": {
+            "Thought-Stalker Warlock": 1
+          },
+          "missing_cards_evaluation_only": {}
+        },
+        {
+          "game_id": "890a0a636d3c4e3197788ee752a41ae7:1:1",
+          "reason": "unaccounted_hand_movement",
+          "valid_snapshots_before_stop": 2,
+          "turn": 2,
+          "active_player": "target",
+          "added_cards_evaluation_only": {
+            "Daggerfang Duo": 1
+          },
+          "missing_cards_evaluation_only": {}
+        },
+        {
+          "game_id": "ac4bf37186d643d1b885b03cfd2ce00b:6:1",
+          "reason": "unaccounted_hand_movement",
+          "valid_snapshots_before_stop": 2,
+          "turn": 2,
+          "active_player": "observer",
+          "added_cards_evaluation_only": {},
+          "missing_cards_evaluation_only": {
+            "Warren Elder": 1
+          }
+        },
+        {
+          "game_id": "a04095e16fea49d693d0c5964587d924:5:1",
+          "reason": "unaccounted_hand_movement",
+          "valid_snapshots_before_stop": 5,
+          "turn": 3,
+          "active_player": "observer",
+          "added_cards_evaluation_only": {},
+          "missing_cards_evaluation_only": {
+            "Mouse Trapper": 1
+          }
+        },
+        {
+          "game_id": "31108c6f43b44c72985febe6c0f963c9:1:1",
+          "reason": "unaccounted_hand_movement",
+          "valid_snapshots_before_stop": 4,
+          "turn": 3,
+          "active_player": "observer",
+          "added_cards_evaluation_only": {
+            "Darkstar Augur": 1
+          },
+          "missing_cards_evaluation_only": {}
+        },
+        {
+          "game_id": "31108c6f43b44c72985febe6c0f963c9:4:1",
+          "reason": "unaccounted_hand_movement",
+          "valid_snapshots_before_stop": 4,
+          "turn": 3,
+          "active_player": "observer",
+          "added_cards_evaluation_only": {
+            "Curious Forager": 1
+          },
+          "missing_cards_evaluation_only": {}
+        },
+        {
+          "game_id": "739990a15d5a4ff4b084348e89e200f1:1:1",
+          "reason": "unaccounted_hand_movement",
+          "valid_snapshots_before_stop": 1,
+          "turn": 1,
+          "active_player": "observer",
+          "added_cards_evaluation_only": {},
+          "missing_cards_evaluation_only": {
+            "Swamp": 1
+          }
+        },
+        {
+          "game_id": "739990a15d5a4ff4b084348e89e200f1:6:1",
+          "reason": "unaccounted_hand_movement",
+          "valid_snapshots_before_stop": 4,
+          "turn": 3,
+          "active_player": "observer",
+          "added_cards_evaluation_only": {},
+          "missing_cards_evaluation_only": {
+            "Plumecreed Escort": 1
+          }
+        },
+        {
+          "game_id": "67492806324948b792d07e6769347732:2:1",
+          "reason": "unaccounted_hand_movement",
+          "valid_snapshots_before_stop": 5,
+          "turn": 3,
+          "active_player": "observer",
+          "added_cards_evaluation_only": {},
+          "missing_cards_evaluation_only": {
+            "Valley Floodcaller": 1
+          }
+        }
+      ]
+    },
+    {
+      "max_turn": 10,
+      "allow_mulligans": false,
+      "unique_games": 5000,
+      "games_with_snapshots": 4270,
+      "valid_snapshots": 48704,
+      "games_without_reconstruction_stop": 1781,
+      "stops_by_reason": {
+        "departure_not_in_hand": 513,
+        "mulligan": 705,
+        "opening_hand_size": 1,
+        "tutor": 181,
+        "unaccounted_hand_movement": 1819
+      },
+      "stops_by_turn_player_reason": {
+        "10:observer:unaccounted_hand_movement": 31,
+        "10:target:departure_not_in_hand": 15,
+        "10:target:tutor": 5,
+        "10:target:unaccounted_hand_movement": 8,
+        "1:observer:unaccounted_hand_movement": 42,
+        "2:observer:unaccounted_hand_movement": 120,
+        "2:target:tutor": 7,
+        "2:target:unaccounted_hand_movement": 30,
+        "3:observer:unaccounted_hand_movement": 196,
+        "3:target:departure_not_in_hand": 15,
+        "3:target:tutor": 26,
+        "3:target:unaccounted_hand_movement": 85,
+        "4:observer:departure_not_in_hand": 1,
+        "4:observer:unaccounted_hand_movement": 211,
+        "4:target:departure_not_in_hand": 68,
+        "4:target:tutor": 38,
+        "4:target:unaccounted_hand_movement": 73,
+        "5:observer:departure_not_in_hand": 1,
+        "5:observer:unaccounted_hand_movement": 226,
+        "5:target:departure_not_in_hand": 116,
+        "5:target:tutor": 38,
+        "5:target:unaccounted_hand_movement": 88,
+        "6:observer:unaccounted_hand_movement": 211,
+        "6:target:departure_not_in_hand": 123,
+        "6:target:tutor": 24,
+        "6:target:unaccounted_hand_movement": 52,
+        "7:observer:departure_not_in_hand": 1,
+        "7:observer:unaccounted_hand_movement": 165,
+        "7:target:departure_not_in_hand": 80,
+        "7:target:tutor": 19,
+        "7:target:unaccounted_hand_movement": 61,
+        "8:observer:unaccounted_hand_movement": 108,
+        "8:target:departure_not_in_hand": 53,
+        "8:target:tutor": 12,
+        "8:target:unaccounted_hand_movement": 38,
+        "9:observer:unaccounted_hand_movement": 61,
+        "9:target:departure_not_in_hand": 40,
+        "9:target:tutor": 12,
+        "9:target:unaccounted_hand_movement": 13
+      },
+      "unaccounted_movement_sizes": {
+        "added=0,missing=1": 726,
+        "added=0,missing=2": 48,
+        "added=0,missing=3": 1,
+        "added=1,missing=0": 837,
+        "added=1,missing=1": 72,
+        "added=1,missing=2": 3,
+        "added=2,missing=0": 99,
+        "added=2,missing=1": 25,
+        "added=2,missing=2": 1,
+        "added=3,missing=0": 3,
+        "added=3,missing=1": 2,
+        "added=4,missing=0": 1,
+        "added=5,missing=0": 1
+      },
+      "stop_examples_evaluation_only": [
+        {
+          "game_id": "deaa4cdcd3e84d8e8b5a0ea34a0f9d79:2:1",
+          "reason": "unaccounted_hand_movement",
+          "valid_snapshots_before_stop": 8,
+          "turn": 5,
+          "active_player": "target",
+          "added_cards_evaluation_only": {
+            "Glidedive Duo": 1
+          },
+          "missing_cards_evaluation_only": {}
+        },
+        {
+          "game_id": "deaa4cdcd3e84d8e8b5a0ea34a0f9d79:4:1",
+          "reason": "unaccounted_hand_movement",
+          "valid_snapshots_before_stop": 3,
+          "turn": 2,
+          "active_player": "target",
+          "added_cards_evaluation_only": {
+            "Thought-Stalker Warlock": 1
+          },
+          "missing_cards_evaluation_only": {}
+        },
+        {
+          "game_id": "4ea0265993b146c6924e227911309882:1:1",
+          "reason": "unaccounted_hand_movement",
+          "valid_snapshots_before_stop": 10,
+          "turn": 6,
+          "active_player": "observer",
+          "added_cards_evaluation_only": {
+            "Oakhollow Village": 1
+          },
+          "missing_cards_evaluation_only": {
+            "Alania's Pathmaker": 1
+          }
+        },
+        {
+          "game_id": "28e91d69333040d88b748c4dfe0619a9:3:1",
+          "reason": "unaccounted_hand_movement",
+          "valid_snapshots_before_stop": 7,
+          "turn": 4,
+          "active_player": "target",
+          "added_cards_evaluation_only": {
+            "Longstalk Brawl": 1
+          },
+          "missing_cards_evaluation_only": {}
+        },
+        {
+          "game_id": "28e91d69333040d88b748c4dfe0619a9:4:1",
+          "reason": "unaccounted_hand_movement",
+          "valid_snapshots_before_stop": 14,
+          "turn": 8,
+          "active_player": "target",
+          "added_cards_evaluation_only": {
+            "Forest": 1
+          },
+          "missing_cards_evaluation_only": {}
+        },
+        {
+          "game_id": "96ad616caa294bf0b2f9315096e034d1:3:1",
+          "reason": "unaccounted_hand_movement",
+          "valid_snapshots_before_stop": 10,
+          "turn": 6,
+          "active_player": "observer",
+          "added_cards_evaluation_only": {},
+          "missing_cards_evaluation_only": {
+            "Oakhollow Village": 1,
+            "Forest": 1
+          }
+        },
+        {
+          "game_id": "890a0a636d3c4e3197788ee752a41ae7:1:1",
+          "reason": "unaccounted_hand_movement",
+          "valid_snapshots_before_stop": 2,
+          "turn": 2,
+          "active_player": "target",
+          "added_cards_evaluation_only": {
+            "Daggerfang Duo": 1
+          },
+          "missing_cards_evaluation_only": {}
+        },
+        {
+          "game_id": "890a0a636d3c4e3197788ee752a41ae7:2:1",
+          "reason": "departure_not_in_hand",
+          "valid_snapshots_before_stop": 13,
+          "turn": 7,
+          "active_player": "target",
+          "departure_card_evaluation_only": "Corpseberry Cultivator"
+        },
+        {
+          "game_id": "ac4bf37186d643d1b885b03cfd2ce00b:4:1",
+          "reason": "unaccounted_hand_movement",
+          "valid_snapshots_before_stop": 11,
+          "turn": 6,
+          "active_player": "observer",
+          "added_cards_evaluation_only": {
+            "Swamp": 1
+          },
+          "missing_cards_evaluation_only": {}
+        },
+        {
+          "game_id": "ac4bf37186d643d1b885b03cfd2ce00b:6:1",
+          "reason": "unaccounted_hand_movement",
+          "valid_snapshots_before_stop": 2,
+          "turn": 2,
+          "active_player": "observer",
+          "added_cards_evaluation_only": {},
+          "missing_cards_evaluation_only": {
+            "Warren Elder": 1
+          }
+        }
+      ]
+    },
+    {
+      "max_turn": 10,
+      "allow_mulligans": true,
+      "unique_games": 5000,
+      "games_with_snapshots": 4973,
+      "valid_snapshots": 56827,
+      "games_without_reconstruction_stop": 2099,
+      "stops_by_reason": {
+        "departure_not_in_hand": 587,
+        "opening_hand_size": 1,
+        "tutor": 209,
+        "unaccounted_hand_movement": 2104
+      },
+      "stops_by_turn_player_reason": {
+        "10:observer:unaccounted_hand_movement": 35,
+        "10:target:departure_not_in_hand": 16,
+        "10:target:tutor": 5,
+        "10:target:unaccounted_hand_movement": 12,
+        "1:observer:unaccounted_hand_movement": 47,
+        "2:observer:unaccounted_hand_movement": 133,
+        "2:target:departure_not_in_hand": 1,
+        "2:target:tutor": 7,
+        "2:target:unaccounted_hand_movement": 35,
+        "3:observer:unaccounted_hand_movement": 233,
+        "3:target:departure_not_in_hand": 24,
+        "3:target:tutor": 31,
+        "3:target:unaccounted_hand_movement": 92,
+        "4:observer:departure_not_in_hand": 1,
+        "4:observer:unaccounted_hand_movement": 247,
+        "4:target:departure_not_in_hand": 78,
+        "4:target:tutor": 41,
+        "4:target:unaccounted_hand_movement": 83,
+        "5:observer:departure_not_in_hand": 1,
+        "5:observer:unaccounted_hand_movement": 266,
+        "5:target:departure_not_in_hand": 132,
+        "5:target:tutor": 43,
+        "5:target:unaccounted_hand_movement": 101,
+        "6:observer:unaccounted_hand_movement": 244,
+        "6:target:departure_not_in_hand": 135,
+        "6:target:tutor": 30,
+        "6:target:unaccounted_hand_movement": 66,
+        "7:observer:departure_not_in_hand": 1,
+        "7:observer:unaccounted_hand_movement": 186,
+        "7:target:departure_not_in_hand": 91,
+        "7:target:tutor": 23,
+        "7:target:unaccounted_hand_movement": 70,
+        "8:observer:unaccounted_hand_movement": 128,
+        "8:target:departure_not_in_hand": 63,
+        "8:target:tutor": 14,
+        "8:target:unaccounted_hand_movement": 40,
+        "9:observer:unaccounted_hand_movement": 71,
+        "9:target:departure_not_in_hand": 44,
+        "9:target:tutor": 15,
+        "9:target:unaccounted_hand_movement": 15
+      },
+      "unaccounted_movement_sizes": {
+        "added=0,missing=1": 841,
+        "added=0,missing=2": 59,
+        "added=0,missing=3": 1,
+        "added=1,missing=0": 962,
+        "added=1,missing=1": 84,
+        "added=1,missing=2": 3,
+        "added=2,missing=0": 114,
+        "added=2,missing=1": 28,
+        "added=2,missing=2": 1,
+        "added=3,missing=0": 6,
+        "added=3,missing=1": 2,
+        "added=4,missing=0": 1,
+        "added=5,missing=0": 2
+      },
+      "stop_examples_evaluation_only": [
+        {
+          "game_id": "deaa4cdcd3e84d8e8b5a0ea34a0f9d79:2:1",
+          "reason": "unaccounted_hand_movement",
+          "valid_snapshots_before_stop": 8,
+          "turn": 5,
+          "active_player": "target",
+          "added_cards_evaluation_only": {
+            "Glidedive Duo": 1
+          },
+          "missing_cards_evaluation_only": {}
+        },
+        {
+          "game_id": "deaa4cdcd3e84d8e8b5a0ea34a0f9d79:3:1",
+          "reason": "departure_not_in_hand",
+          "valid_snapshots_before_stop": 4,
+          "turn": 3,
+          "active_player": "target",
+          "departure_card_evaluation_only": "Swamp"
+        },
+        {
+          "game_id": "deaa4cdcd3e84d8e8b5a0ea34a0f9d79:4:1",
+          "reason": "unaccounted_hand_movement",
+          "valid_snapshots_before_stop": 3,
+          "turn": 2,
+          "active_player": "target",
+          "added_cards_evaluation_only": {
+            "Thought-Stalker Warlock": 1
+          },
+          "missing_cards_evaluation_only": {}
+        },
+        {
+          "game_id": "4ea0265993b146c6924e227911309882:1:1",
+          "reason": "unaccounted_hand_movement",
+          "valid_snapshots_before_stop": 10,
+          "turn": 6,
+          "active_player": "observer",
+          "added_cards_evaluation_only": {
+            "Oakhollow Village": 1
+          },
+          "missing_cards_evaluation_only": {
+            "Alania's Pathmaker": 1
+          }
+        },
+        {
+          "game_id": "28e91d69333040d88b748c4dfe0619a9:1:1",
+          "reason": "unaccounted_hand_movement",
+          "valid_snapshots_before_stop": 14,
+          "turn": 8,
+          "active_player": "observer",
+          "added_cards_evaluation_only": {
+            "Hugs, Grisly Guardian": 1,
+            "Rust-Shield Rampager": 1
+          },
+          "missing_cards_evaluation_only": {}
+        },
+        {
+          "game_id": "28e91d69333040d88b748c4dfe0619a9:2:1",
+          "reason": "departure_not_in_hand",
+          "valid_snapshots_before_stop": 11,
+          "turn": 6,
+          "active_player": "target",
+          "departure_card_evaluation_only": "Alania's Pathmaker"
+        },
+        {
+          "game_id": "28e91d69333040d88b748c4dfe0619a9:3:1",
+          "reason": "unaccounted_hand_movement",
+          "valid_snapshots_before_stop": 7,
+          "turn": 4,
+          "active_player": "target",
+          "added_cards_evaluation_only": {
+            "Longstalk Brawl": 1
+          },
+          "missing_cards_evaluation_only": {}
+        },
+        {
+          "game_id": "28e91d69333040d88b748c4dfe0619a9:4:1",
+          "reason": "unaccounted_hand_movement",
+          "valid_snapshots_before_stop": 14,
+          "turn": 8,
+          "active_player": "target",
+          "added_cards_evaluation_only": {
+            "Forest": 1
+          },
+          "missing_cards_evaluation_only": {}
+        },
+        {
+          "game_id": "28e91d69333040d88b748c4dfe0619a9:5:1",
+          "reason": "departure_not_in_hand",
+          "valid_snapshots_before_stop": 6,
+          "turn": 4,
+          "active_player": "target",
+          "departure_card_evaluation_only": "Forest"
+        },
+        {
+          "game_id": "96ad616caa294bf0b2f9315096e034d1:3:1",
+          "reason": "unaccounted_hand_movement",
+          "valid_snapshots_before_stop": 10,
+          "turn": 6,
+          "active_player": "observer",
+          "added_cards_evaluation_only": {},
+          "missing_cards_evaluation_only": {
+            "Oakhollow Village": 1,
+            "Forest": 1
+          }
+        }
+      ]
+    },
+    {
+      "max_turn": 30,
+      "allow_mulligans": false,
+      "unique_games": 5000,
+      "games_with_snapshots": 4270,
+      "valid_snapshots": 49547,
+      "games_without_reconstruction_stop": 1729,
+      "stops_by_reason": {
+        "departure_not_in_hand": 525,
+        "mulligan": 705,
+        "opening_hand_size": 1,
+        "tutor": 187,
+        "unaccounted_hand_movement": 1853
+      },
+      "stops_by_turn_player_reason": {
+        "10:observer:unaccounted_hand_movement": 31,
+        "10:target:departure_not_in_hand": 15,
+        "10:target:tutor": 5,
+        "10:target:unaccounted_hand_movement": 8,
+        "11:observer:unaccounted_hand_movement": 14,
+        "11:target:departure_not_in_hand": 6,
+        "11:target:tutor": 3,
+        "11:target:unaccounted_hand_movement": 3,
+        "12:observer:unaccounted_hand_movement": 9,
+        "12:target:departure_not_in_hand": 1,
+        "12:target:tutor": 1,
+        "12:target:unaccounted_hand_movement": 1,
+        "13:observer:unaccounted_hand_movement": 2,
+        "13:target:departure_not_in_hand": 1,
+        "13:target:tutor": 2,
+        "13:target:unaccounted_hand_movement": 1,
+        "14:observer:unaccounted_hand_movement": 1,
+        "14:target:departure_not_in_hand": 2,
+        "15:observer:unaccounted_hand_movement": 2,
+        "15:target:unaccounted_hand_movement": 1,
+        "17:target:departure_not_in_hand": 1,
+        "1:observer:unaccounted_hand_movement": 42,
+        "20:target:departure_not_in_hand": 1,
+        "2:observer:unaccounted_hand_movement": 120,
+        "2:target:tutor": 7,
+        "2:target:unaccounted_hand_movement": 30,
+        "3:observer:unaccounted_hand_movement": 196,
+        "3:target:departure_not_in_hand": 15,
+        "3:target:tutor": 26,
+        "3:target:unaccounted_hand_movement": 85,
+        "4:observer:departure_not_in_hand": 1,
+        "4:observer:unaccounted_hand_movement": 211,
+        "4:target:departure_not_in_hand": 68,
+        "4:target:tutor": 38,
+        "4:target:unaccounted_hand_movement": 73,
+        "5:observer:departure_not_in_hand": 1,
+        "5:observer:unaccounted_hand_movement": 226,
+        "5:target:departure_not_in_hand": 116,
+        "5:target:tutor": 38,
+        "5:target:unaccounted_hand_movement": 88,
+        "6:observer:unaccounted_hand_movement": 211,
+        "6:target:departure_not_in_hand": 123,
+        "6:target:tutor": 24,
+        "6:target:unaccounted_hand_movement": 52,
+        "7:observer:departure_not_in_hand": 1,
+        "7:observer:unaccounted_hand_movement": 165,
+        "7:target:departure_not_in_hand": 80,
+        "7:target:tutor": 19,
+        "7:target:unaccounted_hand_movement": 61,
+        "8:observer:unaccounted_hand_movement": 108,
+        "8:target:departure_not_in_hand": 53,
+        "8:target:tutor": 12,
+        "8:target:unaccounted_hand_movement": 38,
+        "9:observer:unaccounted_hand_movement": 61,
+        "9:target:departure_not_in_hand": 40,
+        "9:target:tutor": 12,
+        "9:target:unaccounted_hand_movement": 13
+      },
+      "unaccounted_movement_sizes": {
+        "added=0,missing=1": 737,
+        "added=0,missing=2": 49,
+        "added=0,missing=3": 1,
+        "added=1,missing=0": 856,
+        "added=1,missing=1": 72,
+        "added=1,missing=2": 3,
+        "added=2,missing=0": 101,
+        "added=2,missing=1": 25,
+        "added=2,missing=2": 1,
+        "added=3,missing=0": 3,
+        "added=3,missing=1": 2,
+        "added=4,missing=0": 1,
+        "added=5,missing=0": 2
+      },
+      "stop_examples_evaluation_only": [
+        {
+          "game_id": "deaa4cdcd3e84d8e8b5a0ea34a0f9d79:2:1",
+          "reason": "unaccounted_hand_movement",
+          "valid_snapshots_before_stop": 8,
+          "turn": 5,
+          "active_player": "target",
+          "added_cards_evaluation_only": {
+            "Glidedive Duo": 1
+          },
+          "missing_cards_evaluation_only": {}
+        },
+        {
+          "game_id": "deaa4cdcd3e84d8e8b5a0ea34a0f9d79:4:1",
+          "reason": "unaccounted_hand_movement",
+          "valid_snapshots_before_stop": 3,
+          "turn": 2,
+          "active_player": "target",
+          "added_cards_evaluation_only": {
+            "Thought-Stalker Warlock": 1
+          },
+          "missing_cards_evaluation_only": {}
+        },
+        {
+          "game_id": "4ea0265993b146c6924e227911309882:1:1",
+          "reason": "unaccounted_hand_movement",
+          "valid_snapshots_before_stop": 10,
+          "turn": 6,
+          "active_player": "observer",
+          "added_cards_evaluation_only": {
+            "Oakhollow Village": 1
+          },
+          "missing_cards_evaluation_only": {
+            "Alania's Pathmaker": 1
+          }
+        },
+        {
+          "game_id": "28e91d69333040d88b748c4dfe0619a9:3:1",
+          "reason": "unaccounted_hand_movement",
+          "valid_snapshots_before_stop": 7,
+          "turn": 4,
+          "active_player": "target",
+          "added_cards_evaluation_only": {
+            "Longstalk Brawl": 1
+          },
+          "missing_cards_evaluation_only": {}
+        },
+        {
+          "game_id": "28e91d69333040d88b748c4dfe0619a9:4:1",
+          "reason": "unaccounted_hand_movement",
+          "valid_snapshots_before_stop": 14,
+          "turn": 8,
+          "active_player": "target",
+          "added_cards_evaluation_only": {
+            "Forest": 1
+          },
+          "missing_cards_evaluation_only": {}
+        },
+        {
+          "game_id": "96ad616caa294bf0b2f9315096e034d1:3:1",
+          "reason": "unaccounted_hand_movement",
+          "valid_snapshots_before_stop": 10,
+          "turn": 6,
+          "active_player": "observer",
+          "added_cards_evaluation_only": {},
+          "missing_cards_evaluation_only": {
+            "Oakhollow Village": 1,
+            "Forest": 1
+          }
+        },
+        {
+          "game_id": "890a0a636d3c4e3197788ee752a41ae7:1:1",
+          "reason": "unaccounted_hand_movement",
+          "valid_snapshots_before_stop": 2,
+          "turn": 2,
+          "active_player": "target",
+          "added_cards_evaluation_only": {
+            "Daggerfang Duo": 1
+          },
+          "missing_cards_evaluation_only": {}
+        },
+        {
+          "game_id": "890a0a636d3c4e3197788ee752a41ae7:2:1",
+          "reason": "departure_not_in_hand",
+          "valid_snapshots_before_stop": 13,
+          "turn": 7,
+          "active_player": "target",
+          "departure_card_evaluation_only": "Corpseberry Cultivator"
+        },
+        {
+          "game_id": "ac4bf37186d643d1b885b03cfd2ce00b:4:1",
+          "reason": "unaccounted_hand_movement",
+          "valid_snapshots_before_stop": 11,
+          "turn": 6,
+          "active_player": "observer",
+          "added_cards_evaluation_only": {
+            "Swamp": 1
+          },
+          "missing_cards_evaluation_only": {}
+        },
+        {
+          "game_id": "ac4bf37186d643d1b885b03cfd2ce00b:6:1",
+          "reason": "unaccounted_hand_movement",
+          "valid_snapshots_before_stop": 2,
+          "turn": 2,
+          "active_player": "observer",
+          "added_cards_evaluation_only": {},
+          "missing_cards_evaluation_only": {
+            "Warren Elder": 1
+          }
+        }
+      ]
+    },
+    {
+      "max_turn": 30,
+      "allow_mulligans": true,
+      "unique_games": 5000,
+      "games_with_snapshots": 4973,
+      "valid_snapshots": 57810,
+      "games_without_reconstruction_stop": 2037,
+      "stops_by_reason": {
+        "departure_not_in_hand": 601,
+        "opening_hand_size": 1,
+        "tutor": 216,
+        "unaccounted_hand_movement": 2145
+      },
+      "stops_by_turn_player_reason": {
+        "10:observer:unaccounted_hand_movement": 35,
+        "10:target:departure_not_in_hand": 16,
+        "10:target:tutor": 5,
+        "10:target:unaccounted_hand_movement": 12,
+        "11:observer:unaccounted_hand_movement": 16,
+        "11:target:departure_not_in_hand": 6,
+        "11:target:tutor": 3,
+        "11:target:unaccounted_hand_movement": 3,
+        "12:observer:unaccounted_hand_movement": 10,
+        "12:target:departure_not_in_hand": 2,
+        "12:target:tutor": 2,
+        "12:target:unaccounted_hand_movement": 2,
+        "13:observer:unaccounted_hand_movement": 3,
+        "13:target:departure_not_in_hand": 2,
+        "13:target:tutor": 2,
+        "13:target:unaccounted_hand_movement": 1,
+        "14:observer:unaccounted_hand_movement": 1,
+        "14:target:departure_not_in_hand": 2,
+        "15:observer:unaccounted_hand_movement": 3,
+        "15:target:unaccounted_hand_movement": 1,
+        "16:observer:unaccounted_hand_movement": 1,
+        "17:target:departure_not_in_hand": 1,
+        "1:observer:unaccounted_hand_movement": 47,
+        "20:target:departure_not_in_hand": 1,
+        "2:observer:unaccounted_hand_movement": 133,
+        "2:target:departure_not_in_hand": 1,
+        "2:target:tutor": 7,
+        "2:target:unaccounted_hand_movement": 35,
+        "3:observer:unaccounted_hand_movement": 233,
+        "3:target:departure_not_in_hand": 24,
+        "3:target:tutor": 31,
+        "3:target:unaccounted_hand_movement": 92,
+        "4:observer:departure_not_in_hand": 1,
+        "4:observer:unaccounted_hand_movement": 247,
+        "4:target:departure_not_in_hand": 78,
+        "4:target:tutor": 41,
+        "4:target:unaccounted_hand_movement": 83,
+        "5:observer:departure_not_in_hand": 1,
+        "5:observer:unaccounted_hand_movement": 266,
+        "5:target:departure_not_in_hand": 132,
+        "5:target:tutor": 43,
+        "5:target:unaccounted_hand_movement": 101,
+        "6:observer:unaccounted_hand_movement": 244,
+        "6:target:departure_not_in_hand": 135,
+        "6:target:tutor": 30,
+        "6:target:unaccounted_hand_movement": 66,
+        "7:observer:departure_not_in_hand": 1,
+        "7:observer:unaccounted_hand_movement": 186,
+        "7:target:departure_not_in_hand": 91,
+        "7:target:tutor": 23,
+        "7:target:unaccounted_hand_movement": 70,
+        "8:observer:unaccounted_hand_movement": 128,
+        "8:target:departure_not_in_hand": 63,
+        "8:target:tutor": 14,
+        "8:target:unaccounted_hand_movement": 40,
+        "9:observer:unaccounted_hand_movement": 71,
+        "9:target:departure_not_in_hand": 44,
+        "9:target:tutor": 15,
+        "9:target:unaccounted_hand_movement": 15
+      },
+      "unaccounted_movement_sizes": {
+        "added=0,missing=1": 853,
+        "added=0,missing=2": 61,
+        "added=0,missing=3": 1,
+        "added=1,missing=0": 985,
+        "added=1,missing=1": 84,
+        "added=1,missing=2": 3,
+        "added=2,missing=0": 117,
+        "added=2,missing=1": 28,
+        "added=2,missing=2": 1,
+        "added=3,missing=0": 6,
+        "added=3,missing=1": 2,
+        "added=4,missing=0": 1,
+        "added=5,missing=0": 3
+      },
+      "stop_examples_evaluation_only": [
+        {
+          "game_id": "deaa4cdcd3e84d8e8b5a0ea34a0f9d79:2:1",
+          "reason": "unaccounted_hand_movement",
+          "valid_snapshots_before_stop": 8,
+          "turn": 5,
+          "active_player": "target",
+          "added_cards_evaluation_only": {
+            "Glidedive Duo": 1
+          },
+          "missing_cards_evaluation_only": {}
+        },
+        {
+          "game_id": "deaa4cdcd3e84d8e8b5a0ea34a0f9d79:3:1",
+          "reason": "departure_not_in_hand",
+          "valid_snapshots_before_stop": 4,
+          "turn": 3,
+          "active_player": "target",
+          "departure_card_evaluation_only": "Swamp"
+        },
+        {
+          "game_id": "deaa4cdcd3e84d8e8b5a0ea34a0f9d79:4:1",
+          "reason": "unaccounted_hand_movement",
+          "valid_snapshots_before_stop": 3,
+          "turn": 2,
+          "active_player": "target",
+          "added_cards_evaluation_only": {
+            "Thought-Stalker Warlock": 1
+          },
+          "missing_cards_evaluation_only": {}
+        },
+        {
+          "game_id": "4ea0265993b146c6924e227911309882:1:1",
+          "reason": "unaccounted_hand_movement",
+          "valid_snapshots_before_stop": 10,
+          "turn": 6,
+          "active_player": "observer",
+          "added_cards_evaluation_only": {
+            "Oakhollow Village": 1
+          },
+          "missing_cards_evaluation_only": {
+            "Alania's Pathmaker": 1
+          }
+        },
+        {
+          "game_id": "28e91d69333040d88b748c4dfe0619a9:1:1",
+          "reason": "unaccounted_hand_movement",
+          "valid_snapshots_before_stop": 14,
+          "turn": 8,
+          "active_player": "observer",
+          "added_cards_evaluation_only": {
+            "Hugs, Grisly Guardian": 1,
+            "Rust-Shield Rampager": 1
+          },
+          "missing_cards_evaluation_only": {}
+        },
+        {
+          "game_id": "28e91d69333040d88b748c4dfe0619a9:2:1",
+          "reason": "departure_not_in_hand",
+          "valid_snapshots_before_stop": 11,
+          "turn": 6,
+          "active_player": "target",
+          "departure_card_evaluation_only": "Alania's Pathmaker"
+        },
+        {
+          "game_id": "28e91d69333040d88b748c4dfe0619a9:3:1",
+          "reason": "unaccounted_hand_movement",
+          "valid_snapshots_before_stop": 7,
+          "turn": 4,
+          "active_player": "target",
+          "added_cards_evaluation_only": {
+            "Longstalk Brawl": 1
+          },
+          "missing_cards_evaluation_only": {}
+        },
+        {
+          "game_id": "28e91d69333040d88b748c4dfe0619a9:4:1",
+          "reason": "unaccounted_hand_movement",
+          "valid_snapshots_before_stop": 14,
+          "turn": 8,
+          "active_player": "target",
+          "added_cards_evaluation_only": {
+            "Forest": 1
+          },
+          "missing_cards_evaluation_only": {}
+        },
+        {
+          "game_id": "28e91d69333040d88b748c4dfe0619a9:5:1",
+          "reason": "departure_not_in_hand",
+          "valid_snapshots_before_stop": 6,
+          "turn": 4,
+          "active_player": "target",
+          "departure_card_evaluation_only": "Forest"
+        },
+        {
+          "game_id": "96ad616caa294bf0b2f9315096e034d1:3:1",
+          "reason": "unaccounted_hand_movement",
+          "valid_snapshots_before_stop": 10,
+          "turn": 6,
+          "active_player": "observer",
+          "added_cards_evaluation_only": {},
+          "missing_cards_evaluation_only": {
+            "Oakhollow Village": 1,
+            "Forest": 1
+          }
+        }
+      ]
+    }
+  ]
+}

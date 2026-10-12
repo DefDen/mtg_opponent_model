@@ -1,0 +1,382 @@
+{
+  "source": "17Lands public datasets, CC BY 4.0",
+  "replay_source_url": "https://17lands-public.s3.amazonaws.com/analysis_data/replay_data/replay_data_public.BLB.PremierDraft.csv.gz",
+  "input_sha256": {
+    "data/replay_sample_5000.BLB.PremierDraft.csv.gz": "f2bc53322ce3d53b3602e5ed12df76532cb98a92c3ac66abea5f612faf99a3c4",
+    "data/cards.csv": "c1d4b32fc84cfbdac4ec805fe486732b73ee04b7d757134479848e75e96cd82b",
+    "data/game_data_public.BLB.PremierDraft.csv.gz": "61fed2a4db5854ca9f247eba9ea4176cf70a25ee253024928963335d32dbf281"
+  },
+  "settings": {
+    "seed": 42,
+    "max_games": 5000,
+    "max_deck_rows": 20000,
+    "max_turn": 3,
+    "basic_lands_included": true,
+    "zero_mulligans_only": true
+  },
+  "replay_rows": 5000,
+  "replay_events": 1025,
+  "held_out_events": 205,
+  "held_out_games": 971,
+  "training_decks": 4180,
+  "training_event_overlap_with_test": 0,
+  "evaluated_games": 822,
+  "evaluated_snapshots": 4656,
+  "stopped_games_by_reason": {
+    "mulligan": 146,
+    "tutor": 7,
+    "unaccounted_hand_movement": 79,
+    "departure_not_in_hand": 3
+  },
+  "unsupported_prior_snapshots": 61,
+  "card_universe_size": 276,
+  "aggregation": "average snapshots within game, then average games",
+  "metrics": {
+    "public_movements": {
+      "Brier": 0.016065679847838302,
+      "MRR": 0.7008115897182849,
+      "Recall@10": 0.38012368207623665,
+      "Recall@20": 0.5113984474568414,
+      "Recall@5": 0.28162244622098626
+    },
+    "no_history": {
+      "Brier": 0.017081318067671648,
+      "MRR": 0.5223042718639656,
+      "Recall@10": 0.29144875062758224,
+      "Recall@20": 0.3862562275518474,
+      "Recall@5": 0.24808818985826242
+    }
+  },
+  "paired_differences": {
+    "Brier": {
+      "estimate": -0.0010156382198333452,
+      "ci95": [
+        -0.0011388977786222435,
+        -0.0008909890175637257
+      ]
+    },
+    "MRR": {
+      "estimate": 0.1785073178543194,
+      "ci95": [
+        0.14806561735373874,
+        0.20998228040385183
+      ]
+    },
+    "Recall@10": {
+      "estimate": 0.0886749314486544,
+      "ci95": [
+        0.07566224810683629,
+        0.1007048009130837
+      ]
+    },
+    "Recall@20": {
+      "estimate": 0.12514221990499397,
+      "ci95": [
+        0.10867164611820848,
+        0.1426775958326978
+      ]
+    },
+    "Recall@5": {
+      "estimate": 0.033534256362723835,
+      "ci95": [
+        0.0271953966537427,
+        0.04024182049217141
+      ]
+    }
+  },
+  "uncertainty": {
+    "method": "paired percentile bootstrap over draft events",
+    "samples": 1000,
+    "seed": 42,
+    "evaluated_events": 203,
+    "difference": "public_movements minus no_history"
+  },
+  "examples": [
+    {
+      "game_id": "28e91d69333040d88b748c4dfe0619a9:3:1",
+      "public_input": {
+        "opening_hand_size": 7,
+        "steps": [
+          {
+            "turn": 1,
+            "active_player": "observer",
+            "draws": 0,
+            "departed": [],
+            "hand_size": 7
+          },
+          {
+            "turn": 1,
+            "active_player": "target",
+            "draws": 1,
+            "departed": [
+              "Forest"
+            ],
+            "hand_size": 7
+          }
+        ]
+      },
+      "actual_hand_evaluation_only": {
+        "Treeguard Duo": 1,
+        "Overprotect": 1,
+        "Longstalk Brawl": 1,
+        "Three Tree Rootweaver": 1,
+        "Mountain": 1,
+        "Forest": 1,
+        "Alania's Pathmaker": 1
+      },
+      "top_predictions": [
+        [
+          "Forest",
+          0.7527959113690426
+        ],
+        [
+          "Swamp",
+          0.3079586751764595
+        ],
+        [
+          "Plains",
+          0.23690860352534795
+        ],
+        [
+          "Island",
+          0.21070645125865073
+        ],
+        [
+          "Mountain",
+          0.14026182127300843
+        ],
+        [
+          "Bakersbane Duo",
+          0.12704696459966927
+        ],
+        [
+          "Polliwallop",
+          0.10175592769873167
+        ],
+        [
+          "Cache Grab",
+          0.10159062460978756
+        ],
+        [
+          "Treeguard Duo",
+          0.09804573153355944
+        ],
+        [
+          "Longstalk Brawl",
+          0.09385371020107183
+        ]
+      ]
+    },
+    {
+      "game_id": "28e91d69333040d88b748c4dfe0619a9:3:1",
+      "public_input": {
+        "opening_hand_size": 7,
+        "steps": [
+          {
+            "turn": 1,
+            "active_player": "observer",
+            "draws": 0,
+            "departed": [],
+            "hand_size": 7
+          },
+          {
+            "turn": 1,
+            "active_player": "target",
+            "draws": 1,
+            "departed": [
+              "Forest"
+            ],
+            "hand_size": 7
+          },
+          {
+            "turn": 2,
+            "active_player": "observer",
+            "draws": 0,
+            "departed": [],
+            "hand_size": 7
+          },
+          {
+            "turn": 2,
+            "active_player": "target",
+            "draws": 1,
+            "departed": [
+              "Mountain",
+              "Three Tree Rootweaver"
+            ],
+            "hand_size": 6
+          }
+        ]
+      },
+      "actual_hand_evaluation_only": {
+        "Brazen Collector": 1,
+        "Treeguard Duo": 1,
+        "Overprotect": 1,
+        "Longstalk Brawl": 1,
+        "Forest": 1,
+        "Alania's Pathmaker": 1
+      },
+      "top_predictions": [
+        [
+          "Forest",
+          0.7199186491737365
+        ],
+        [
+          "Mountain",
+          0.6732509274554669
+        ],
+        [
+          "Take Out the Trash",
+          0.14163522235581444
+        ],
+        [
+          "Rust-Shield Rampager",
+          0.1394886143803707
+        ],
+        [
+          "Three Tree Rootweaver",
+          0.13388946686405592
+        ],
+        [
+          "Bakersbane Duo",
+          0.11263824945220262
+        ],
+        [
+          "Roughshod Duo",
+          0.11166559222970053
+        ],
+        [
+          "Alania's Pathmaker",
+          0.10634737903340508
+        ],
+        [
+          "Junkblade Bruiser",
+          0.10453071522953343
+        ],
+        [
+          "Brambleguard Veteran",
+          0.09492704095076938
+        ]
+      ]
+    },
+    {
+      "game_id": "28e91d69333040d88b748c4dfe0619a9:3:1",
+      "public_input": {
+        "opening_hand_size": 7,
+        "steps": [
+          {
+            "turn": 1,
+            "active_player": "observer",
+            "draws": 0,
+            "departed": [],
+            "hand_size": 7
+          },
+          {
+            "turn": 1,
+            "active_player": "target",
+            "draws": 1,
+            "departed": [
+              "Forest"
+            ],
+            "hand_size": 7
+          },
+          {
+            "turn": 2,
+            "active_player": "observer",
+            "draws": 0,
+            "departed": [],
+            "hand_size": 7
+          },
+          {
+            "turn": 2,
+            "active_player": "target",
+            "draws": 1,
+            "departed": [
+              "Mountain",
+              "Three Tree Rootweaver"
+            ],
+            "hand_size": 6
+          },
+          {
+            "turn": 3,
+            "active_player": "observer",
+            "draws": 0,
+            "departed": [],
+            "hand_size": 6
+          },
+          {
+            "turn": 3,
+            "active_player": "target",
+            "draws": 1,
+            "departed": [
+              "Forest",
+              "Alania's Pathmaker"
+            ],
+            "hand_size": 5
+          }
+        ]
+      },
+      "actual_hand_evaluation_only": {
+        "Roughshod Duo": 1,
+        "Brazen Collector": 1,
+        "Treeguard Duo": 1,
+        "Overprotect": 1,
+        "Longstalk Brawl": 1
+      },
+      "top_predictions": [
+        [
+          "Mountain",
+          0.6618503963117768
+        ],
+        [
+          "Forest",
+          0.606462970245482
+        ],
+        [
+          "Take Out the Trash",
+          0.15318462715047318
+        ],
+        [
+          "Rust-Shield Rampager",
+          0.13325091165855327
+        ],
+        [
+          "Three Tree Rootweaver",
+          0.13133541325980494
+        ],
+        [
+          "Alania's Pathmaker",
+          0.12204278406373852
+        ],
+        [
+          "Polliwallop",
+          0.09930441274969155
+        ],
+        [
+          "Junkblade Bruiser",
+          0.09105204907251192
+        ],
+        [
+          "Brambleguard Veteran",
+          0.08545223369142377
+        ],
+        [
+          "Longstalk Brawl",
+          0.08264471566088834
+        ]
+      ]
+    }
+  ],
+  "limitations": [
+    "File-prefix sample",
+    "Early half-turn summaries only",
+    "Labels are audited tracked-player hands, viewed from their opponent's perspective",
+    "Random departures ignore strategic card selection and passes",
+    "Uniform opening hands ignore Arena hand smoothing",
+    "Library changes from milling, scrying, or effects outside ordinary draws are ignored",
+    "Mulligans excluded; snapshots stop when movement accounting fails",
+    "Casting zone provenance is unavailable; matching accounting is only a consistency check",
+    "Draw counts and hand sizes are derived from lengths, never private card identities",
+    "No held-out decklists or private hand identities passed to the model",
+    "No-compatible-prior snapshots are excluded and counted"
+  ]
+}

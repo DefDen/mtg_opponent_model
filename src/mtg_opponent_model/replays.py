@@ -4,7 +4,7 @@ import csv
 from dataclasses import dataclass
 import gzip
 from pathlib import Path
-from typing import Mapping
+from typing import Iterator, Mapping
 
 from .hands import PublicHistory, PublicStep
 
@@ -30,60 +30,142 @@ def card_list(value: str, names: Mapping[str, str]) -> tuple[str, ...]:
     return tuple(names[card] for card in value.split("|") if card)
 
 
-def reconstruct_snapshots(row: Mapping[str, str], names: Mapping[str, str],
-                          max_turn: int = 3) -> tuple[list[HandSnapshot], str | None]:
-    """Validate early-turn hand accounting, stopping at unsupported movement.
+def _card_count(value: str) -> int:
+    """Count opaque IDs without resolving private identities."""
+    return sum(bool(card) for card in value.split("|"))
 
-    Private opening/drawn/hand identities are used only to reconstruct and
-    audit labels. Public draw counts and hand sizes use list lengths only.
-    With zero mulligans and ordinary movements, labels must match exactly.
-    Summaries lack zone provenance; consistent accounting isn't proof that
-    every cast came from hand. Retain this limitation in experiment reports.
-    """
-    if int(row["num_mulligans"]) != 0:
-        return [], "mulligan"
+
+def _validate_start(row: Mapping[str, str], max_turn: int, allow_mulligans: bool) -> str | None:
+    if not 1 <= max_turn <= 30:
+        raise ValueError("max_turn must be between 1 and 30")
+    mulligans = int(row["num_mulligans"])
+    if not 0 <= mulligans <= 7:
+        raise ValueError("num_mulligans must be between 0 and 7")
+    if mulligans and not allow_mulligans:
+        return "mulligan"
     if row["on_play"] not in {"True", "False"}:
         raise ValueError("Invalid on_play")
-    opening = card_list(row["opening_hand"], names)
-    if len(opening) != 7:
-        return [], "opening_hand_size"
-    hand = Counter(opening)
-    steps: list[PublicStep] = []
-    snapshots = []
-    game_id = ":".join(row[k] for k in ("draft_id", "match_number", "game_number"))
+    if _card_count(row["opening_hand"]) != 7 - mulligans:
+        return "opening_hand_size"
+    return None
+
+
+class _TutorStop(Exception):
+    def __init__(self, turn: int) -> None:
+        self.turn = turn
+
+
+def _public_steps(row: Mapping[str, str], names: Mapping[str, str],
+                  max_turn: int) -> Iterator[tuple[str, PublicStep]]:
+    """Read public identities and opaque private-list lengths only.
+
+    Unprefixed movement fields describe the active player. In particular,
+    oppo_turn_N_cards_drawn_or_tutored is an observer count, not a target draw.
+    Missing target movements are never inferred from changes in private hands.
+    """
     sides = ("user", "oppo") if row["on_play"] == "True" else ("oppo", "user")
     for turn in range(1, max_turn + 1):
         for side in sides:
             prefix = f"{side}_turn_{turn}_"
-            # Padded/nonexistent half-turns have both life values zero.
             if (float(row[prefix + "eot_user_life"] or 0) == 0
                     and float(row[prefix + "eot_oppo_life"] or 0) == 0):
-                return snapshots, None
-            draws = card_list(row.get(prefix + "cards_drawn", ""), names) if side == "user" else ()
+                return
             if side == "user" and row.get(prefix + "cards_tutored", ""):
-                return snapshots, "tutor"
+                raise _TutorStop(turn)
+            draws = _card_count(row.get(prefix + "cards_drawn", "")) if side == "user" else 0
             keys = (["lands_played", "creatures_cast", "non_creatures_cast", "cards_discarded"]
                     if side == "user" else [])
-            # This column records target instants/sorceries on either half-turn.
             keys.append("user_instants_sorceries_cast")
             departed = tuple(card for key in keys
                              for card in card_list(row.get(prefix + key, ""), names))
+            yield prefix, PublicStep(turn, "target" if side == "user" else "observer",
+                                     draws, departed,
+                                     _card_count(row[prefix + "eot_user_cards_in_hand"]))
+
+
+def extract_public_history(row: Mapping[str, str], names: Mapping[str, str],
+                           max_turn: int = 3, *,
+                           allow_mulligans: bool = False) -> tuple[PublicHistory, str | None]:
+    """Extract the longest count-consistent history without reading private identities.
+
+    This is a public-input adapter, not an audited evaluation label. Cast source
+    zones remain unknown. A count-consistent history may fail the independent
+    identity audit in reconstruct_snapshots. Unknown private IDs are permitted.
+    """
+    reason = _validate_start(row, max_turn, allow_mulligans)
+    history = PublicHistory(_card_count(row["opening_hand"]), ())
+    if reason:
+        return history, reason
+    steps = []
+    size = history.opening_hand_size
+    try:
+        for _, step in _public_steps(row, names, max_turn):
+            if size + step.draws - len(step.departed) != step.hand_size:
+                return PublicHistory(history.opening_hand_size, tuple(steps)), "unaccounted_hand_size"
+            steps.append(step)
+            size = step.hand_size
+    except _TutorStop:
+        return PublicHistory(history.opening_hand_size, tuple(steps)), "tutor"
+    return PublicHistory(history.opening_hand_size, tuple(steps)), None
+
+
+def reconstruct_snapshots(row: Mapping[str, str], names: Mapping[str, str],
+                          max_turn: int = 3, *,
+                          allow_mulligans: bool = False,
+                          diagnostics: dict | None = None) -> tuple[list[HandSnapshot], str | None]:
+    """Independently audit public steps against private hand identities.
+
+    Retain only the prefix passing exact identity accounting. Diagnostic label
+    differences are evaluation-only and never supply missing public movements.
+    Consistent accounting does not establish casting zone provenance.
+    Opt-in mulligan support audits the kept hand of size 7 - num_mulligans;
+    keep decisions and library-bottom order are not represented in the model.
+    """
+    if diagnostics is not None:
+        diagnostics.clear()
+    reason = _validate_start(row, max_turn, allow_mulligans)
+    if reason:
+        return [], reason
+    hand = Counter(card_list(row["opening_hand"], names))
+    opening_size = sum(hand.values())
+    steps: list[PublicStep] = []
+    snapshots = []
+    game_id = ":".join(row[k] for k in ("draft_id", "match_number", "game_number"))
+    try:
+        for prefix, step in _public_steps(row, names, max_turn):
+            if diagnostics is not None:
+                diagnostics.clear()
+                diagnostics.update(turn=step.turn, active_player=step.active_player)
+            draws = (card_list(row.get(prefix + "cards_drawn", ""), names)
+                     if step.active_player == "target" else ())
             next_hand = hand.copy()
             next_hand.update(draws)
-            for card in departed:
+            for card in step.departed:
                 next_hand[card] -= 1
                 if next_hand[card] < 0:
+                    if diagnostics is not None:
+                        diagnostics["departure_card_evaluation_only"] = card
                     return snapshots, "departure_not_in_hand"
             next_hand = +next_hand
             actual = Counter(card_list(row[prefix + "eot_user_cards_in_hand"], names))
             if next_hand != actual:
+                if diagnostics is not None:
+                    diagnostics.update(
+                        added_cards_evaluation_only=dict(actual - next_hand),
+                        missing_cards_evaluation_only=dict(next_hand - actual),
+                    )
                 return snapshots, "unaccounted_hand_movement"
-            # Only counts and public departure identities cross the boundary.
-            steps.append(PublicStep(turn, "target" if side == "user" else "observer",
-                                    len(draws), departed, sum(actual.values())))
+            steps.append(step)
             snapshots.append(HandSnapshot(game_id, row["draft_id"],
-                                          PublicHistory(7, tuple(steps)), dict(actual)))
+                                          PublicHistory(opening_size, tuple(steps)), dict(actual)))
             hand = actual
+    except _TutorStop as stop:
+        if diagnostics is not None:
+            diagnostics.clear()
+            diagnostics.update(turn=stop.turn, active_player="target")
+        return snapshots, "tutor"
+    if diagnostics is not None:
+        diagnostics.clear()
     return snapshots, None
 
 

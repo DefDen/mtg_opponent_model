@@ -139,3 +139,46 @@ the file-prefix sample introduce selection bias; these are smoke results.
 Future work: broaden reliable event reconstruction, handle mulligans and
 library/zone effects, and learn action likelihoods before interpreting passes
 and other choices as evidence about hidden cards.
+
+To inspect reconstruction failures across the existing sample, run
+`.venv/bin/python examples/audit_replays.py`. It audits rounds 3, 10, and 30,
+counts stops by turn and player, and writes evaluation-only hand mismatch
+examples. These diagnostics never enter public model inputs. See the
+[replay coverage audit](reports/blb_replay_audit.md) for results and schema limits.
+
+## Expanded replay evaluation
+
+Public-history extraction now has its own adapter, `extract_public_history`.
+It resolves only public card identities; opening, draw, and end-of-turn hand
+lists contribute lengths only. It stops at unsupported count changes or
+tutors. `reconstruct_snapshots` independently audits private identities and
+may reject even a count-consistent history. Neither adapter infers missing
+public movements from label differences.
+
+Mulligan games are opt-in with `--include-mulligans`. The kept opening hand
+must contain exactly `7 - num_mulligans` cards and pass the same identity
+audit. Predictions approximate retained hands as uniform samples, ignoring
+keep choices, Arena smoothing, and London-mulligan bottoming order. The
+default remains the original zero-mulligan experiment.
+
+Expand the sample using the existing compressed prefix, then evaluate:
+
+```bash
+.venv/bin/python examples/download_replay_sample.py \
+  --prefix data/replay_data_public.BLB.PremierDraft.prefix.gz \
+  --games 5000 --output data/replay_sample_5000.BLB.PremierDraft.csv.gz
+.venv/bin/python examples/replay_hands.py \
+  --replays data/replay_sample_5000.BLB.PremierDraft.csv.gz --max-games 5000 \
+  --output reports/blb_hands_5000.json
+.venv/bin/python examples/replay_hands.py \
+  --replays data/replay_sample_5000.BLB.PremierDraft.csv.gz --max-games 5000 \
+  --include-mulligans --output reports/blb_hands_5000_mulligans.json
+```
+
+If no local prefix is available, omit `--prefix` to download a bounded range.
+Reports now include paired 95% percentile bootstrap intervals for method
+differences, resampling whole draft events to retain within-event dependence.
+Snapshots still average within games, then games receive equal weight.
+Intervals describe uncertainty within the filtered prefix sample; they do not
+correct selection bias or establish full-dataset performance. See the
+[expanded experiment](reports/blb_hands_5000.md).

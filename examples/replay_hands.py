@@ -8,6 +8,7 @@ from pathlib import Path
 import random
 
 from mtg_opponent_model.hands import HandModel, IncompatibleHistoryError, PublicHistory, hand_metrics
+from mtg_opponent_model.hand_evaluation import summarize_hand_scores
 from mtg_opponent_model.replays import load_card_names, read_replay_rows, reconstruct_snapshots
 from mtg_opponent_model.seventeenlands import SeventeenLandsLoader
 
@@ -29,10 +30,15 @@ def main() -> None:
     parser.add_argument("--max-deck-rows", type=int, default=20000)
     parser.add_argument("--max-turn", type=int, default=3)
     parser.add_argument("--seed", type=int, default=42)
+    parser.add_argument("--bootstrap-samples", type=int, default=1000)
+    parser.add_argument("--include-mulligans", action="store_true",
+                        help="Audit smaller kept hands; use a uniform retained-hand approximation")
     parser.add_argument("--output", type=Path, default=Path("data/replay_hand_results.json"))
     args = parser.parse_args()
     if args.max_turn < 1 or args.max_turn > 30:
         parser.error("max-turn must be between 1 and 30")
+    if args.bootstrap_samples < 1:
+        parser.error("bootstrap-samples must be positive")
     names = load_card_names(args.cards)
     rows = read_replay_rows(args.replays, args.max_games)
     if any(row["expansion"] != "BLB" or row["event_type"] != "PremierDraft" for row in rows):
@@ -57,6 +63,9 @@ def main() -> None:
     examples = []
     used_games = set()
     seen_games = set()
+    game_groups = {}
+    baseline_by_size = {}
+    evaluated_games_by_mulligans = Counter()
     for row in rows:
         if row["draft_id"] not in test_groups:
             continue
@@ -64,7 +73,8 @@ def main() -> None:
         if game_key in seen_games:
             continue
         seen_games.add(game_key)
-        snapshots, reason = reconstruct_snapshots(row, names, args.max_turn)
+        snapshots, reason = reconstruct_snapshots(row, names, args.max_turn,
+                                                 allow_mulligans=args.include_mulligans)
         if reason:
             stops[reason] += 1
         for snapshot in snapshots:
@@ -74,12 +84,17 @@ def main() -> None:
                 unsupported += 1
                 continue
             hand_size = snapshot.public.steps[-1].hand_size
-            baseline = model.predict(PublicHistory(hand_size, ()))
+            if hand_size not in baseline_by_size:
+                baseline_by_size[hand_size] = model.predict(PublicHistory(hand_size, ()))
+            baseline = baseline_by_size[hand_size]
             scores["public_movements"][snapshot.game_id].append(
                 hand_metrics(probabilities, snapshot.actual_hand, universe))
             scores["no_history"][snapshot.game_id].append(
                 hand_metrics(baseline, snapshot.actual_hand, universe))
+            if snapshot.game_id not in used_games:
+                evaluated_games_by_mulligans[row["num_mulligans"]] += 1
             used_games.add(snapshot.game_id)
+            game_groups[snapshot.game_id] = snapshot.group_id
             snapshots_count += 1
             if len(examples) < 3 and snapshot.public.steps[-1].active_player == "target":
                 examples.append({"game_id": snapshot.game_id,
@@ -89,33 +104,33 @@ def main() -> None:
                                                            key=lambda x: (-x[1], x[0]))[:10]})
     if not snapshots_count:
         raise ValueError("No supported evaluation snapshots")
-    metrics = {}
-    for method, games in scores.items():
-        keys = next(iter(games.values()))[0].keys()
-        metrics[method] = {key: sum(sum(s[key] for s in game) / len(game)
-                                   for game in games.values()) / len(games) for key in keys}
+    summary = summarize_hand_scores(scores, game_groups,
+                                    bootstrap_samples=args.bootstrap_samples, seed=args.seed)
     report = {
         "source": "17Lands public datasets, CC BY 4.0",
         "replay_source_url": "https://17lands-public.s3.amazonaws.com/analysis_data/replay_data/replay_data_public.BLB.PremierDraft.csv.gz",
         "input_sha256": {str(path): checksum(path) for path in (args.replays, args.cards, args.decks)},
         "settings": {"seed": args.seed, "max_games": args.max_games,
                      "max_deck_rows": args.max_deck_rows, "max_turn": args.max_turn,
-                     "basic_lands_included": True, "zero_mulligans_only": True},
+                     "basic_lands_included": True,
+                     "zero_mulligans_only": not args.include_mulligans},
         "replay_rows": len(rows), "replay_events": len(groups),
         "held_out_events": len(test_groups), "held_out_games": len(seen_games),
         "training_decks": len(train),
         "training_event_overlap_with_test": len({d.group_id for d in train} & test_groups),
         "evaluated_games": len(used_games), "evaluated_snapshots": snapshots_count,
+        "evaluated_games_by_mulligans": dict(sorted(evaluated_games_by_mulligans.items())),
         "stopped_games_by_reason": dict(stops),
         "unsupported_prior_snapshots": unsupported, "card_universe_size": len(universe),
         "aggregation": "average snapshots within game, then average games",
-        "metrics": metrics, "examples": examples,
+        **summary, "examples": examples,
         "limitations": ["File-prefix sample", "Early half-turn summaries only",
                         "Labels are audited tracked-player hands, viewed from their opponent's perspective",
                         "Random departures ignore strategic card selection and passes",
                         "Uniform opening hands ignore Arena hand smoothing",
+                        "When enabled, mulligan hands use a uniform retained-hand approximation; keep choices and bottoming order are ignored",
                         "Library changes from milling, scrying, or effects outside ordinary draws are ignored",
-                        "Mulligans excluded; snapshots stop when movement accounting fails",
+                        "Snapshots stop when movement accounting fails; mulligans are excluded unless explicitly enabled",
                         "Casting zone provenance is unavailable; matching accounting is only a consistency check",
                         "Draw counts and hand sizes are derived from lengths, never private card identities",
                         "No held-out decklists or private hand identities passed to the model",
