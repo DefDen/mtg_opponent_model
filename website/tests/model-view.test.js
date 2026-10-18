@@ -7,7 +7,7 @@ test('ranking and recall use card types, omit zero-probability cards',()=>{
  assert.equal(recallAt({A:.8,B:0},{A:2,B:1},5),.5);
 });
 test('departure counts and prediction deltas stop at the selected half-turn',()=>{
- const frames=[{step:{departed:['A']},probabilities:{A:.5}},{step:{departed:['A','B']},probabilities:{A:.25}}];
+ const frames=[{step:{active_player:'target',departed:['A']},probabilities:{A:.5}},{step:{active_player:'target',departed:['A','B']},probabilities:{A:.25}}];
  assert.deepEqual(departures(frames,0),['A']);
  assert.deepEqual(departures(frames,1),['A','A','B']);
  assert.equal(predictionDelta(frames,0,'A'),null);
@@ -85,8 +85,8 @@ test('all replay frames contain public board snapshots for both sides',()=>{
 
 test('change panel includes disappearing cards and ignores hidden hand labels',async()=>{
  const {predictionChanges}=await import('../dist/model-view.js');
- const frames=[{probabilities:{A:.8,B:.1},actual_hand:{A:1}},
-  {probabilities:{B:.7,C:.2},actual_hand:{Z:7}}];
+ const frames=[{step:{active_player:'target'},probabilities:{A:.8,B:.1},actual_hand:{A:1}},
+  {step:{active_player:'target'},probabilities:{B:.7,C:.2},actual_hand:{Z:7}}];
  assert.equal(predictionChanges(frames,0),null);
  const changes=predictionChanges(frames,1);
  assert.deepEqual(changes.falls,[{card:'A',before:.8,after:0,delta:-.8}]);
@@ -101,4 +101,21 @@ test('probability history stops at the selected state and handles absent candida
   {step:{turn:2,active_player:'target'},probabilities:{A:1}}];
  assert.deepEqual(predictionHistory(frames,1,'A').map(p=>p.probability),[.8,0]);
  assert.equal(predictionHistory(frames,0,'A').length,1);
+});
+
+test('opponent deltas persist through friendly turns and update on the next opponent turn',async()=>{
+ const {predictionChanges,opponentComparison}=await import('../dist/model-view.js');
+ const frames=[
+  {step:{active_player:'observer'},probabilities:{A:.9}},
+  {step:{active_player:'target'},probabilities:{A:.8}},
+  {step:{active_player:'observer'},probabilities:{A:.8}},
+  {step:{active_player:'target'},probabilities:{A:.5}},
+  {step:{active_player:'observer'},probabilities:{A:.4}},
+  {step:{active_player:'target'},probabilities:{A:.25}}];
+ for(const index of [0,1,2])assert.equal(predictionDelta(frames,index,'A'),null);
+ assert.deepEqual(opponentComparison(frames,4),{previous:1,current:3});
+ assert.equal(predictionDelta(frames,4,'A'),predictionDelta(frames,3,'A'));
+ assert.deepEqual(predictionChanges(frames,4),predictionChanges(frames,3));
+ assert.equal(predictionDelta(frames,5,'A'),-.25);
+ assert.equal(predictionChanges(frames,2),null);
 });

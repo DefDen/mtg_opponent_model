@@ -11,9 +11,18 @@ export function recallAt(probabilities, actualHand, k) {
 export function departures(frames, index) {
  return frames.slice(0,index+1).flatMap(frame=>frame.step.departed);
 }
+// Hold the latest opponent-to-opponent comparison through observer turns.
+export function opponentComparison(frames, index) {
+ let current=index;
+ while(current>=0&&frames[current].step.active_player!=='target')current--;
+ let previous=current-1;
+ while(previous>=0&&frames[previous].step.active_player!=='target')previous--;
+ return previous<0?null:{previous,current};
+}
 export function predictionDelta(frames, index, card) {
- if (!index) return null;
- return (frames[index].probabilities[card]||0)-(frames[index-1].probabilities[card]||0);
+ const comparison=opponentComparison(frames,index);
+ if(!comparison)return null;
+ return (frames[comparison.current].probabilities[card]||0)-(frames[comparison.previous].probabilities[card]||0);
 }
 export function colorClass(metadata = {}) {
  const colors = metadata.colors || '';
@@ -36,8 +45,9 @@ export function boardEntries(cards, previousCards = []) {
 
 // Compare the full candidate pool, including cards whose probability fell to zero.
 export function predictionChanges(frames, index, limit = 3) {
- if (!index) return null;
- const before = frames[index-1].probabilities, after = frames[index].probabilities;
+ const comparison=opponentComparison(frames,index);
+ if(!comparison)return null;
+ const before = frames[comparison.previous].probabilities, after = frames[comparison.current].probabilities;
  const cards = new Set([...Object.keys(before), ...Object.keys(after)]);
  const changes = [...cards].map(card => ({card, before:before[card]||0, after:after[card]||0,
   delta:(after[card]||0)-(before[card]||0)}));

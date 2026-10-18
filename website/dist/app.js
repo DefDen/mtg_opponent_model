@@ -1,4 +1,4 @@
-import { percent, ranked, recallAt, departures, predictionDelta, colorClass, cardKind, boardEntries, predictionChanges, predictionHistory } from './model-view.js';
+import { percent, ranked, recallAt, departures, predictionDelta, colorClass, cardKind, boardEntries, predictionChanges, predictionHistory, opponentComparison } from './model-view.js';
 const $ = selector => document.querySelector(selector);
 const escape = value => String(value).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 let data;
@@ -53,7 +53,7 @@ function render() {
   button.setAttribute('aria-pressed',String(state.selected===card));
   const delta=predictionDelta(game.frames,state.frame,card);
   const hit=state.reveal?(frame.actual_hand[card]?'<span class="hit">✓ In hand</span>':'<span class="miss">Not held</span>'):'';
-  button.innerHTML=`<span class="rank">${String(i+1).padStart(2,'0')}</span>${symbol(card)}<div><div class="card-name">${escape(card)} ${hit}</div><div class="card-kind">${escape(cardKind(data.cards[card]))}</div></div><div class="probability">${percent(p)}<div class="prob-bar"><span style="width:${p*100}%"></span></div><div class="prob-delta">${delta===null?'First snapshot':Math.abs(delta)<0.0005?'Unchanged':`${delta>=0?'+':''}${(delta*100).toFixed(1)} pp`}</div></div>`;
+  button.innerHTML=`<span class="rank">${String(i+1).padStart(2,'0')}</span>${symbol(card)}<div><div class="card-name">${escape(card)} ${hit}</div><div class="card-kind">${escape(cardKind(data.cards[card]))}</div></div><div class="probability">${percent(p)}<div class="prob-bar"><span style="width:${p*100}%"></span></div><div class="prob-delta">${delta===null?'Awaiting next opponent turn':Math.abs(delta)<0.0005?'Unchanged':`${delta>=0?'+':''}${(delta*100).toFixed(1)} pp`}</div></div>`;
   button.addEventListener('click',()=>{state.selected=card;render();});list.append(button);
  });
  const hand=$('#actual-hand');hand.replaceChildren();
@@ -117,10 +117,11 @@ function renderZone(container,cards,previous,animate) {
 function renderChanges(game) {
  const changes=predictionChanges(game.frames,state.frame), container=$('#prediction-changes');
  container.replaceChildren();
- if(!changes){container.innerHTML='<p class="change-empty">First recorded state: use Next or Play to see how predictions change.</p>';return;}
- const previous=game.frames[state.frame-1], current=game.frames[state.frame];
+ if(!changes){container.innerHTML='<p class="change-empty">Changes appear after two recorded opponent turns and stay visible during your turn.</p>';return;}
+ const comparison=opponentComparison(game.frames,state.frame);
+ const previous=game.frames[comparison.previous], current=game.frames[comparison.current];
  const context=document.createElement('p');context.className='change-empty';
- context.textContent=`Hand: ${previous.step.hand_size} → ${current.step.hand_size} cards · Compatible decks: ${previous.compatible_decks.toLocaleString()} → ${current.compatible_decks.toLocaleString()}`;
+ context.textContent=`Opponent turn ${previous.step.turn} → ${current.step.turn} · Hand: ${previous.step.hand_size} → ${current.step.hand_size} cards · Compatible decks: ${previous.compatible_decks.toLocaleString()} → ${current.compatible_decks.toLocaleString()}`;
  container.append(context);
  if(!changes.rises.length&&!changes.falls.length){
   const empty=document.createElement('p');empty.className='change-empty';empty.textContent='Predictions unchanged at displayed precision. Board activity alone does not update this baseline.';container.append(empty);return;
@@ -152,7 +153,7 @@ function renderDetail(frame,game) {
  const p=frame.probabilities[card]||0, baseline=frame.baseline[card]||0;
  const seen=departures(game.frames,state.frame).filter(c=>c===card).length;
  const delta=predictionDelta(game.frames,state.frame,card);
- $('#card-detail').innerHTML=`<div class="detail-content"><div class="detail-title">${escape(card)}</div><div class="detail-prob">${percent(p)}</div><p>Chance the target holds <b>at least one copy</b> at this snapshot. It is not a prediction of when they will play it.</p><div class="detail-comparison"><div><small>Hand-size-only baseline</small><b>${percent(baseline)}</b></div><div><small>Change since last snapshot</small><b>${delta===null?'—':`${delta>=0?'+':''}${(delta*100).toFixed(1)} pp`}</b></div></div><p>${seen?`${seen} cop${seen===1?'y has':'ies have'} already left the hand publicly. The model removes those copies; additional copies can still be held.`:'This card has not publicly left the hand yet. Its score comes from the plausible decks and the target’s current hand size.'}</p><p style="margin-top:10px">${frame.compatible_decks.toLocaleString()} historical decks contain enough copies to explain all departures so far. The model weights them by the observed card frequencies, then estimates what remains in hand.</p></div>`;
+ $('#card-detail').innerHTML=`<div class="detail-content"><div class="detail-title">${escape(card)}</div><div class="detail-prob">${percent(p)}</div><p>Chance the target holds <b>at least one copy</b> at this snapshot. It is not a prediction of when they will play it.</p><div class="detail-comparison"><div><small>Hand-size-only baseline</small><b>${percent(baseline)}</b></div><div><small>Change vs previous opponent turn</small><b>${delta===null?'—':`${delta>=0?'+':''}${(delta*100).toFixed(1)} pp`}</b></div></div><p>${seen?`${seen} cop${seen===1?'y has':'ies have'} already left the hand publicly. The model removes those copies; additional copies can still be held.`:'This card has not publicly left the hand yet. Its score comes from the plausible decks and the target’s current hand size.'}</p><p style="margin-top:10px">${frame.compatible_decks.toLocaleString()} historical decks contain enough copies to explain all departures so far. The model weights them by the observed card frequencies, then estimates what remains in hand.</p></div>`;
  $('#card-detail .detail-content').append(renderTrend(game,card));
  if(images[card]) {
   const button=document.createElement('button');button.className='detail-image-button';button.dataset.previewCard=card;button.setAttribute('aria-label',`Enlarge ${card}`);

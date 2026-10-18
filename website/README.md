@@ -83,10 +83,10 @@ repository:
 ```
 
 The replay sidebar shows the three largest probability rises and falls across the
-full candidate pool between adjacent recorded states. Click a change or prediction
+full candidate pool between successive opponent turn-end states. Click a change or prediction
 to inspect its probability history through the selected state (future values stay
 hidden). Differences use only exported model probabilities, never hand labels.
-The first recorded state has no preceding comparison. These are combined updates
+The first opponent state has no preceding opponent comparison. Deltas and the change panel remain fixed during observer turns, even if current probabilities change. These are combined updates
 from public hand movements, not causal attribution to individual actions or a
 learned model of strategic choices. The hosted replay still uses the interpretable
 hand baseline; boosted-tree experiments remain separate.
