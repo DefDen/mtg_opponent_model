@@ -175,6 +175,14 @@
     "set": "blb",
     "collector_number": "210"
   },
+  "Coruscation Mage": {
+    "image": "assets/cards/6674c208-4d8d-4833-bee2-bfc87c93049d.jpg",
+    "source_url": "https://scryfall.com/card/tblb/17/coruscation-mage?utm_source=api",
+    "image_source_url": "https://cards.scryfall.io/normal/front/6/6/6674c208-4d8d-4833-bee2-bfc87c93049d.jpg?1783909767",
+    "artist": "Gaboleps",
+    "set": "tblb",
+    "collector_number": "17"
+  },
   "Crumb and Get It": {
     "image": "assets/cards/3c7b3b25-d4b3-4451-9f5c-6eb369541175.jpg",
     "source_url": "https://scryfall.com/card/blb/8/crumb-and-get-it?utm_source=api",
@@ -198,6 +206,14 @@
     "artist": "Nereida",
     "set": "blb",
     "collector_number": "89"
+  },
+  "Driftgloom Coyote": {
+    "image": "assets/cards/d7ab2de3-3aea-461a-a74f-fb742cf8a198.jpg",
+    "source_url": "https://scryfall.com/card/blb/11/driftgloom-coyote?utm_source=api",
+    "image_source_url": "https://cards.scryfall.io/normal/front/d/7/d7ab2de3-3aea-461a-a74f-fb742cf8a198.jpg?1783910861",
+    "artist": "Betty Jiang",
+    "set": "blb",
+    "collector_number": "11"
   },
   "Druid of the Spade": {
     "image": "assets/cards/6b485cf7-bad0-4824-9ba7-cb112ce4769f.jpg",
@@ -287,6 +303,22 @@
     "set": "blb",
     "collector_number": "214"
   },
+  "Glidedive Duo": {
+    "image": "assets/cards/4831e7ae-54e3-4bd9-b5af-52dc29f81715.jpg",
+    "source_url": "https://scryfall.com/card/blb/96/glidedive-duo?utm_source=api",
+    "image_source_url": "https://cards.scryfall.io/normal/front/4/8/4831e7ae-54e3-4bd9-b5af-52dc29f81715.jpg?1783910835",
+    "artist": "Manuel Casta\u00f1\u00f3n",
+    "set": "blb",
+    "collector_number": "96"
+  },
+  "Harvestrite Host": {
+    "image": "assets/cards/41762689-0c13-4d45-9d81-ba2afad980f8.jpg",
+    "source_url": "https://scryfall.com/card/blb/15/harvestrite-host?utm_source=api",
+    "image_source_url": "https://cards.scryfall.io/normal/front/4/1/41762689-0c13-4d45-9d81-ba2afad980f8.jpg?1783910861",
+    "artist": "Julie Dillon",
+    "set": "blb",
+    "collector_number": "15"
+  },
   "Head of the Homestead": {
     "image": "assets/cards/2fc20157-edd3-484d-8864-925c071c0551.jpg",
     "source_url": "https://scryfall.com/card/blb/216/head-of-the-homestead?utm_source=api",
@@ -350,6 +382,14 @@
     "artist": "Aurore Folny",
     "set": "blb",
     "collector_number": "178"
+  },
+  "Hop to It": {
+    "image": "assets/cards/ee7207f8-5daa-42af-aeea-7a489047110b.jpg",
+    "source_url": "https://scryfall.com/card/blb/16/hop-to-it?utm_source=api",
+    "image_source_url": "https://cards.scryfall.io/normal/front/e/e/ee7207f8-5daa-42af-aeea-7a489047110b.jpg?1783910862",
+    "artist": "Eelis Kyttanen",
+    "set": "blb",
+    "collector_number": "16"
   },
   "Hugs, Grisly Guardian": {
     "image": "assets/cards/f09d7f4a-c947-4389-befa-1d547d0d1237.jpg",
@@ -638,6 +678,14 @@
     "artist": "Borja Pindado",
     "set": "blb",
     "collector_number": "148"
+  },
+  "Reptilian Recruiter": {
+    "image": "assets/cards/81dec453-c9d7-42cb-980a-c82f82bede76.jpg",
+    "source_url": "https://scryfall.com/card/blb/149/reptilian-recruiter?utm_source=api",
+    "image_source_url": "https://cards.scryfall.io/normal/front/8/1/81dec453-c9d7-42cb-980a-c82f82bede76.jpg?1783910816",
+    "artist": "Joshua Cairos",
+    "set": "blb",
+    "collector_number": "149"
   },
   "Rockface Village": {
     "image": "assets/cards/62799d24-39a6-4e66-8ac3-7cafa99e6e6d.jpg",

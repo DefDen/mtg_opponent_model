@@ -42,6 +42,9 @@ def main() -> None:
                     visible.update(player[zone])
             visible.update(card for card, _ in sorted(frame["probabilities"].items(),
                                                     key=lambda pair: (-pair[1], pair[0]))[:20])
+            for probabilities in frame.get('methods', {}).values():
+                visible.update(card for card, _ in sorted(probabilities.items(),
+                               key=lambda pair: (-pair[1], pair[0]))[:20])
     missing = visible - lookup.keys()
     if missing:
         raise ValueError(f"Missing Scryfall metadata: {sorted(missing)}")
