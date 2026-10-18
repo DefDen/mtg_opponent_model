@@ -1,4 +1,4 @@
-import { percent, ranked, recallAt, departures, predictionDelta, colorClass, cardKind, boardEntries } from './model-view.js';
+import { percent, ranked, recallAt, departures, predictionDelta, colorClass, cardKind, boardEntries, predictionChanges, predictionHistory } from './model-view.js';
 const $ = selector => document.querySelector(selector);
 const escape = value => String(value).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 let data;
@@ -69,6 +69,7 @@ function render() {
  if(!step.hand_size)hand.innerHTML='<p class="empty-hand">The target’s hand is empty.</p>';
  $('#snapshot-score').textContent=state.reveal?`This snapshot: ${percent(recallAt(frame.probabilities,frame.actual_hand,state.limit))} of actual card types recovered in the top ${state.limit}.`:'Reveal the labels to check which guesses were right. They were never used to make these predictions.';
  renderBoard(frame,game);
+ renderChanges(game);
  renderDetail(frame,game);
  wireImageFallbacks();
  $('#selection-note').textContent=`${game.complete?`${game.selection}. Every one of its ${game.recorded_snapshot_count} available turn-end states passed the hand audit and prior support checks; this is a selected demonstration, not a new benchmark.`:data.selection+'.'} Predictions use the no-mulligan 5,000-game experiment’s ${data.training_decks.toLocaleString()} training decks. ${game.stop_reason?'This excerpt stops when movement accounting becomes unsupported.':''}`;
@@ -110,6 +111,38 @@ function renderZone(container,cards,previous,animate) {
   button.addEventListener('click',()=>showCard(card));container.append(button);
  });
 }
+function renderChanges(game) {
+ const changes=predictionChanges(game.frames,state.frame), container=$('#prediction-changes');
+ container.replaceChildren();
+ if(!changes){container.innerHTML='<p class="change-empty">First recorded state: use Next or Play to see how predictions change.</p>';return;}
+ const previous=game.frames[state.frame-1], current=game.frames[state.frame];
+ const context=document.createElement('p');context.className='change-empty';
+ context.textContent=`Hand: ${previous.step.hand_size} → ${current.step.hand_size} cards · Compatible decks: ${previous.compatible_decks.toLocaleString()} → ${current.compatible_decks.toLocaleString()}`;
+ container.append(context);
+ if(!changes.rises.length&&!changes.falls.length){
+  const empty=document.createElement('p');empty.className='change-empty';empty.textContent='Predictions unchanged at displayed precision. Board activity alone does not update this baseline.';container.append(empty);return;
+ }
+ for(const [label,items,kind] of [['More likely',changes.rises,'rise'],['Less likely',changes.falls,'fall']]){
+  if(!items.length)continue;
+  const heading=document.createElement('h3');heading.className='change-label';heading.textContent=label;container.append(heading);
+  for(const item of items){
+   const button=document.createElement('button');button.className=`change-row ${kind}`;
+   button.setAttribute('aria-label',`${item.card}: ${percent(item.before)} to ${percent(item.after)}. Inspect prediction history`);
+   button.innerHTML=`<span>${escape(item.card)}<small>${percent(item.before)} → ${percent(item.after)}</small></span><b>${item.delta>0?'+':''}${(item.delta*100).toFixed(1)} pp</b>`;
+   button.addEventListener('click',()=>{state.selected=item.card;render();$('#card-detail').closest('details').open=true;});container.append(button);
+  }
+ }
+}
+function renderTrend(game,card) {
+ const points=predictionHistory(game.frames,state.frame,card);
+ const container=document.createElement('div');container.className='prediction-trend';
+ const coordinates=points.map((p,i)=>`${10+i*280/Math.max(1,points.length-1)},${100-p.probability*90}`);
+ const description=points.map(p=>`State ${p.index+1}, ${p.player==='target'?'opponent':'observer'} turn ${p.turn}: ${percent(p.probability)}`).join('; ');
+ container.innerHTML=`<h3>Probability over the replay so far</h3><svg viewBox="0 0 300 120" role="img" aria-label="${escape(card)} prediction history"><title>${escape(description)}</title><path d="M10 10 V100 H290" fill="none" stroke="currentColor" opacity=".25"/><text x="12" y="20">100%</text><text x="12" y="116">0%</text><polyline points="${coordinates.join(' ')}" fill="none" stroke="#d5b777" stroke-width="2.5"/>${coordinates.map(point=>{const [x,y]=point.split(',');return `<circle cx="${x}" cy="${y}" r="3" fill="#d5b777"/>`;}).join('')}</svg><small>State 1 → ${points.length} · Current: ${percent(points.at(-1).probability)}. Future states are hidden.</small>`;
+ const details=document.createElement('details');const summary=document.createElement('summary');summary.textContent='Read values';details.append(summary);
+ const values=document.createElement('p');values.textContent=description;details.append(values);container.append(details);
+ return container;
+}
 function renderDetail(frame,game) {
  const card=state.selected;
  if(!card){$('#card-detail').textContent='No card predictions available.';return;}
@@ -117,6 +150,7 @@ function renderDetail(frame,game) {
  const seen=departures(game.frames,state.frame).filter(c=>c===card).length;
  const delta=predictionDelta(game.frames,state.frame,card);
  $('#card-detail').innerHTML=`<div class="detail-content"><div class="detail-title">${escape(card)}</div><div class="detail-prob">${percent(p)}</div><p>Chance the target holds <b>at least one copy</b> at this snapshot. It is not a prediction of when they will play it.</p><div class="detail-comparison"><div><small>Hand-size-only baseline</small><b>${percent(baseline)}</b></div><div><small>Change since last snapshot</small><b>${delta===null?'—':`${delta>=0?'+':''}${(delta*100).toFixed(1)} pp`}</b></div></div><p>${seen?`${seen} cop${seen===1?'y has':'ies have'} already left the hand publicly. The model removes those copies; additional copies can still be held.`:'This card has not publicly left the hand yet. Its score comes from the plausible decks and the target’s current hand size.'}</p><p style="margin-top:10px">${frame.compatible_decks.toLocaleString()} historical decks contain enough copies to explain all departures so far. The model weights them by the observed card frequencies, then estimates what remains in hand.</p></div>`;
+ $('#card-detail .detail-content').append(renderTrend(game,card));
  if(images[card]) {
   const button=document.createElement('button');button.className='detail-image-button';button.setAttribute('aria-label',`Enlarge ${card}`);
   button.innerHTML=`<img class="full-card-image" src="${escape(images[card].image)}" alt="${escape(card)}" loading="lazy" width="488" height="680"><span>Click to view full card ↗</span>`;

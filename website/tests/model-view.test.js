@@ -82,3 +82,23 @@ test('all replay frames contain public board snapshots for both sides',()=>{
   assert.ok(Number.isInteger(frame.board.observer.hand_size));
  }
 });
+
+test('change panel includes disappearing cards and ignores hidden hand labels',async()=>{
+ const {predictionChanges}=await import('../dist/model-view.js');
+ const frames=[{probabilities:{A:.8,B:.1},actual_hand:{A:1}},
+  {probabilities:{B:.7,C:.2},actual_hand:{Z:7}}];
+ assert.equal(predictionChanges(frames,0),null);
+ const changes=predictionChanges(frames,1);
+ assert.deepEqual(changes.falls,[{card:'A',before:.8,after:0,delta:-.8}]);
+ assert.equal(changes.rises[0].card,'B');assert.equal(changes.rises[1].card,'C');
+ frames[1].actual_hand={A:99};assert.deepEqual(predictionChanges(frames,1),changes);
+ assert.deepEqual(predictionChanges([frames[0],frames[0]],1),{rises:[],falls:[]});
+});
+test('probability history stops at the selected state and handles absent candidates',async()=>{
+ const {predictionHistory}=await import('../dist/model-view.js');
+ const frames=[{step:{turn:1,active_player:'target'},probabilities:{A:.8}},
+  {step:{turn:1,active_player:'observer'},probabilities:{}},
+  {step:{turn:2,active_player:'target'},probabilities:{A:1}}];
+ assert.deepEqual(predictionHistory(frames,1,'A').map(p=>p.probability),[.8,0]);
+ assert.equal(predictionHistory(frames,0,'A').length,1);
+});

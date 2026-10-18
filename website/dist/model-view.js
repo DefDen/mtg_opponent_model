@@ -33,3 +33,19 @@ export function boardEntries(cards, previousCards = []) {
   return {card,key:`${card}:${index}`,isNew:!count};
  });
 }
+
+// Compare the full candidate pool, including cards whose probability fell to zero.
+export function predictionChanges(frames, index, limit = 3) {
+ if (!index) return null;
+ const before = frames[index-1].probabilities, after = frames[index].probabilities;
+ const cards = new Set([...Object.keys(before), ...Object.keys(after)]);
+ const changes = [...cards].map(card => ({card, before:before[card]||0, after:after[card]||0,
+  delta:(after[card]||0)-(before[card]||0)}));
+ const order = (a,b) => Math.abs(b.delta)-Math.abs(a.delta) || a.card.localeCompare(b.card, 'en');
+ return {rises:changes.filter(c=>c.delta>=0.0005).sort(order).slice(0,limit),
+  falls:changes.filter(c=>c.delta<=-0.0005).sort(order).slice(0,limit)};
+}
+export function predictionHistory(frames, index, card) {
+ return frames.slice(0,index+1).map((frame,i)=>({index:i, turn:frame.step.turn,
+  player:frame.step.active_player, probability:frame.probabilities[card]||0}));
+}
