@@ -119,3 +119,28 @@ test('opponent deltas persist through friendly turns and update on the next oppo
  assert.equal(predictionDelta(frames,5,'A'),-.25);
  assert.equal(predictionChanges(frames,2),null);
 });
+
+test('method selection drives deltas without changing exported states or labels',async()=>{
+ const {gameForMethod}=await import('../dist/model-view.js');
+ const game={frames:[{step:{active_player:'target'},probabilities:{A:.1},actual_hand:{A:1},methods:{trees:{A:.8}}},
+  {step:{active_player:'target'},probabilities:{A:.2},actual_hand:{B:1},methods:{trees:{A:.5}}},
+  {step:{active_player:'observer'},probabilities:{A:.2},actual_hand:{B:1},methods:{trees:{A:.5}}}]};
+ const selected=gameForMethod(game,'trees');
+ assert.ok(Math.abs(predictionDelta(selected.frames,2,'A')+.3)<1e-12);
+ assert.equal(game.frames[0].probabilities.A,.1);
+ assert.equal(selected.frames[0].actual_hand,game.frames[0].actual_hand);
+});
+test('every exported method scores the same states with finite probabilities and bundled top-card art',()=>{
+ const data=JSON.parse(readFileSync(new URL('../dist/data.json',import.meta.url)));
+ const images=JSON.parse(readFileSync(new URL('../dist/card-images.json',import.meta.url)));
+ assert.equal(Object.keys(data.methods).length,5);
+ for(const game of data.cases)for(const frame of game.frames){
+  assert.deepEqual(Object.keys(frame.methods).sort(),Object.keys(data.methods).sort());
+  assert.deepEqual(frame.methods.historical,frame.probabilities);
+  assert.deepEqual(frame.methods.hand_size,frame.baseline);
+  for(const probabilities of Object.values(frame.methods)){
+   assert.ok(Object.values(probabilities).every(p=>Number.isFinite(p)&&p>=0&&p<=1));
+   for(const [card] of ranked(probabilities,20))assert.ok(images[card],`Missing method artwork: ${card}`);
+  }
+ }
+});

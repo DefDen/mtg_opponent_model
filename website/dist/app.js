@@ -1,9 +1,9 @@
-import { percent, ranked, recallAt, departures, predictionDelta, colorClass, cardKind, boardEntries, predictionChanges, predictionHistory, opponentComparison } from './model-view.js';
+import { percent, ranked, recallAt, departures, predictionDelta, colorClass, cardKind, boardEntries, predictionChanges, predictionHistory, opponentComparison, gameForMethod } from './model-view.js';
 const $ = selector => document.querySelector(selector);
 const escape = value => String(value).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 let data;
 let images = {};
-const state = { game:0, frame:0, reveal:false, limit:10, selected:null };
+const state = { game:0, frame:0, reveal:false, limit:10, selected:null, method:'historical' };
 let playTimer = null;
 let animatedFrame = '';
 function stopPlayback() {
@@ -17,7 +17,7 @@ function symbol(card) {
  const meta=data.cards[card]||{};
  return `<span class="card-symbol ${colorClass(meta)}" aria-hidden="true">${cardKind(meta).includes('Land')?'◇':'✦'}</span>`;
 }
-function activeGame() { return data.cases[state.game]; }
+function activeGame() { return gameForMethod(data.cases[state.game],state.method); }
 function render() {
  hideCardPreview();
  const game=activeGame(), frame=game.frames[state.frame];
@@ -38,7 +38,8 @@ function render() {
  const step=frame.step;
  $('#action-summary').innerHTML=`<b>${step.active_player==='target'?'Target’s':'Observer’s'} turn ${step.turn}</b>${step.draws?`<span class="draw">+${step.draws} unknown card${step.draws===1?'':'s'} drawn</span>`:''}${step.departed.map(card=>`<span class="action-chip" tabindex="0" data-preview-card="${escape(card)}">${escape(card)} left hand</span>`).join('')}${!step.draws&&!step.departed.length?'<span class="draw">No modeled target-hand movement this half-turn</span>':''}`;
  $('#hand-size').textContent=step.hand_size;
- $('#compatible').textContent=frame.compatible_decks.toLocaleString();
+ $('#compatible').textContent=state.method==='historical'?frame.compatible_decks.toLocaleString():'—';
+ $('#method-note').textContent=data.methods[state.method].description;
  $('#departed-count').textContent=departures(game.frames,state.frame).length;
  $('#reveal').textContent=state.reveal?'Hide opponent’s hand':'Reveal opponent’s hand';
  $('#reveal').setAttribute('aria-pressed',String(state.reveal));
@@ -72,10 +73,11 @@ function render() {
  if(!step.hand_size)hand.innerHTML='<p class="empty-hand">The target’s hand is empty.</p>';
  $('#snapshot-score').textContent=state.reveal?`This snapshot: ${percent(recallAt(frame.probabilities,frame.actual_hand,state.limit))} of actual card types recovered in the top ${state.limit}.`:'Reveal the labels to check which guesses were right. They were never used to make these predictions.';
  renderBoard(frame,game);
+ renderMethods(frame);
  renderChanges(game);
  renderDetail(frame,game);
  wireImageFallbacks();
- $('#selection-note').textContent=`${game.complete?`${game.selection}. Every one of its ${game.recorded_snapshot_count} available turn-end states passed the hand audit and prior support checks; this is a selected demonstration, not a new benchmark.`:data.selection+'.'} Predictions use the no-mulligan 5,000-game experiment’s ${data.training_decks.toLocaleString()} training decks. ${game.stop_reason?'This excerpt stops when movement accounting becomes unsupported.':''}`;
+ $('#selection-note').textContent=`${game.complete?`${game.selection}. Every one of its ${game.recorded_snapshot_count} available turn-end states passed the hand audit and prior support checks; this is a selected demonstration, not a new benchmark.`:data.selection+'.'} ${data.methods[state.method].label}: ${data.methods[state.method].description} ${data.method_comparison_note} ${game.stop_reason?'This excerpt stops when movement accounting becomes unsupported.':''}`;
  const ending=$('#game-result');ending.hidden=!(game.complete&&state.frame===game.frames.length-1);
  if(!ending.hidden)ending.textContent=`End of recorded game · ${game.recorded_winner==='target'?'Opponent':'You / observer'} won. The dataset records the result but not the ending action. This is the last available board state; a concession or other ending may not appear on it.`;
 }
@@ -114,6 +116,21 @@ function renderZone(container,cards,previous,animate) {
   button.addEventListener('click',()=>showCard(card));container.append(button);
  });
 }
+function renderMethods(frame) {
+ const container=$('#method-comparison');container.replaceChildren();
+ for(const [method,info] of Object.entries(data.methods)){
+  const section=document.createElement('div');section.className='method-comparison-row';
+  const heading=document.createElement('button');heading.className='method-choice';heading.textContent=info.label;
+  heading.setAttribute('aria-pressed',String(method===state.method));
+  heading.addEventListener('click',()=>{stopPlayback();state.method=method;$('#method-select').value=method;render();});section.append(heading);
+  for(const [card,p] of ranked(frame.methods[method],3)){
+   const button=document.createElement('button');button.className='method-guess';button.dataset.previewCard=card;
+   button.innerHTML=`<span>${escape(card)}</span><b>${percent(p)}</b>`;
+   button.addEventListener('click',()=>{stopPlayback();state.method=method;state.selected=card;$('#method-select').value=method;render();});section.append(button);
+  }
+  container.append(section);
+ }
+}
 function renderChanges(game) {
  const changes=predictionChanges(game.frames,state.frame), container=$('#prediction-changes');
  container.replaceChildren();
@@ -121,7 +138,7 @@ function renderChanges(game) {
  const comparison=opponentComparison(game.frames,state.frame);
  const previous=game.frames[comparison.previous], current=game.frames[comparison.current];
  const context=document.createElement('p');context.className='change-empty';
- context.textContent=`Opponent turn ${previous.step.turn} → ${current.step.turn} · Hand: ${previous.step.hand_size} → ${current.step.hand_size} cards · Compatible decks: ${previous.compatible_decks.toLocaleString()} → ${current.compatible_decks.toLocaleString()}`;
+ context.textContent=`Opponent turn ${previous.step.turn} → ${current.step.turn} · Hand: ${previous.step.hand_size} → ${current.step.hand_size} cards${state.method==='historical'?` · Compatible decks: ${previous.compatible_decks.toLocaleString()} → ${current.compatible_decks.toLocaleString()}`:''}`;
  container.append(context);
  if(!changes.rises.length&&!changes.falls.length){
   const empty=document.createElement('p');empty.className='change-empty';empty.textContent='Predictions unchanged at displayed precision. Board activity alone does not update this baseline.';container.append(empty);return;
@@ -153,7 +170,13 @@ function renderDetail(frame,game) {
  const p=frame.probabilities[card]||0, baseline=frame.baseline[card]||0;
  const seen=departures(game.frames,state.frame).filter(c=>c===card).length;
  const delta=predictionDelta(game.frames,state.frame,card);
- $('#card-detail').innerHTML=`<div class="detail-content"><div class="detail-title">${escape(card)}</div><div class="detail-prob">${percent(p)}</div><p>Chance the target holds <b>at least one copy</b> at this snapshot. It is not a prediction of when they will play it.</p><div class="detail-comparison"><div><small>Hand-size-only baseline</small><b>${percent(baseline)}</b></div><div><small>Change vs previous opponent turn</small><b>${delta===null?'—':`${delta>=0?'+':''}${(delta*100).toFixed(1)} pp`}</b></div></div><p>${seen?`${seen} cop${seen===1?'y has':'ies have'} already left the hand publicly. The model removes those copies; additional copies can still be held.`:'This card has not publicly left the hand yet. Its score comes from the plausible decks and the target’s current hand size.'}</p><p style="margin-top:10px">${frame.compatible_decks.toLocaleString()} historical decks contain enough copies to explain all departures so far. The model weights them by the observed card frequencies, then estimates what remains in hand.</p></div>`;
+ $('#card-detail').innerHTML=`<div class="detail-content"><div class="detail-title">${escape(card)}</div><div class="detail-prob">${percent(p)}</div><p>Chance the target holds <b>at least one copy</b> at this snapshot. It is not a prediction of when they will play it.</p><div class="detail-comparison"><div><small>Hand-size-only baseline</small><b>${percent(baseline)}</b></div><div><small>Change vs previous opponent turn</small><b>${delta===null?'—':`${delta>=0?'+':''}${(delta*100).toFixed(1)} pp`}</b></div></div><p>${escape(data.methods[state.method].description)}</p><p>${seen} copies of this card have publicly left hand. The detailed method descriptions above explain how each model uses this evidence.</p></div>`;
+ const comparison=document.createElement('div');comparison.className='card-method-comparison';
+ const heading=document.createElement('h3');heading.textContent='This card across methods';comparison.append(heading);
+ for(const [method,info] of Object.entries(data.methods)){
+  const row=document.createElement('p');row.textContent=`${info.label}: ${percent(frame.methods[method][card]||0)}`;comparison.append(row);
+ }
+ $('#card-detail .detail-content').append(comparison);
  $('#card-detail .detail-content').append(renderTrend(game,card));
  if(images[card]) {
   const button=document.createElement('button');button.className='detail-image-button';button.dataset.previewCard=card;button.setAttribute('aria-label',`Enlarge ${card}`);
@@ -236,6 +259,8 @@ async function init(){
   const [response,imageResponse]=await Promise.all([fetch('data.json'),fetch('card-images.json')]);
   if(!response.ok||!imageResponse.ok)throw new Error('Data request failed');data=await response.json();images=await imageResponse.json();
   if(!data.cases.length)throw new Error('No replay cases available');
+  for(const [method,info] of Object.entries(data.methods)){const option=document.createElement('option');option.value=method;option.textContent=info.label;$('#method-select').append(option);}
+  $('#method-select').addEventListener('change',()=>{stopPlayback();state.method=$('#method-select').value;render();});
   data.cases.forEach((game,i)=>{const option=document.createElement('option');option.value=i;option.textContent=`${game.label} · ${game.complete?game.recorded_turns+' turns': 'excerpt'} · ${game.frames.length} states`;$('#game-select').append(option);});
   $('#game-select').addEventListener('change',()=>{stopPlayback();state.game=Number($('#game-select').value);state.frame=0;state.selected=null;state.reveal=false;render();});
   $('#frame-slider').addEventListener('input',()=>chooseFrame(Number($('#frame-slider').value)));

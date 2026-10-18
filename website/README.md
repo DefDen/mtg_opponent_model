@@ -88,11 +88,20 @@ to inspect its probability history through the selected state (future values sta
 hidden). Differences use only exported model probabilities, never hand labels.
 The first opponent state has no preceding opponent comparison. Deltas and the change panel remain fixed during observer turns, even if current probabilities change. These are combined updates
 from public hand movements, not causal attribution to individual actions or a
-learned model of strategic choices. The hosted replay still uses the interpretable
-hand baseline; boosted-tree experiments remain separate.
+learned model of strategic choices. The default remains the interpretable historical-deck baseline. A method selector
+and comparison panel also expose the hand-size baseline, smoothed prior, and raw
+boosted-history and boosted-board models on the same states.
 
 Hover a battlefield card, prediction, probability-change row, revealed hand card,
 or named departure to see a large card preview. Keyboard focus also opens the
 preview; Escape dismisses it. Previews stay inside the viewport and clear when
 the replay changes or the page scrolls. Hidden card backs never reveal identities.
 Clicking card images still opens the full-size dialog on desktop and touch devices.
+
+To refresh the comparison, run `.venv/bin/python website/scripts/export_methods.py`
+after exporting replay states, then run the card-art exporter. The comparison
+exporter checks the artifact checksum against the research report and verifies
+that every displayed draft belongs to the saved research test split. Inference
+accepts only public history and public board fields. Trained artifacts stay local;
+the site receives precomputed probabilities. Different training pools and model
+assumptions make this a demonstration, not a replacement for the paired benchmark.

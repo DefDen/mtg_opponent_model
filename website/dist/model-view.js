@@ -59,3 +59,8 @@ export function predictionHistory(frames, index, card) {
  return frames.slice(0,index+1).map((frame,i)=>({index:i, turn:frame.step.turn,
   player:frame.step.active_player, probability:frame.probabilities[card]||0}));
 }
+
+export function gameForMethod(game, method) {
+ return {...game,frames:game.frames.map(frame=>({...frame,
+  probabilities:frame.methods?.[method] ?? (method==='hand_size'?frame.baseline:frame.probabilities)}))};
+}
