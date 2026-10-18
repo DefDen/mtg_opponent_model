@@ -1,0 +1,258 @@
+{
+  "scope": "Reproduce all 12,448 earlier audited held-out states with the original test-only excluded prior",
+  "training_decks": 4180,
+  "held_out_games": 971,
+  "audited_snapshots": 12448,
+  "reasons": {
+    "supported": 8644,
+    "unseen_card_combination": 3790,
+    "exceeds_recorded_single_deck_accounting": 14
+  },
+  "support_and_accounting": {
+    "supported:recorded_pool_violation=False": 8640,
+    "unsupported:recorded_pool_violation=False": 3790,
+    "supported:recorded_pool_violation=True": 4,
+    "unsupported:recorded_pool_violation=True": 14
+  },
+  "examples_evaluation_only": [
+    {
+      "game": "28e91d69333040d88b748c4dfe0619a9:1:1",
+      "turn": 7,
+      "public_departures": {
+        "Forest": 3,
+        "Mountain": 2,
+        "Three Tree Rootweaver": 1,
+        "Brambleguard Veteran": 1,
+        "Treeguard Duo": 1,
+        "Quaketusk Boar": 1,
+        "Rust-Shield Rampager": 1,
+        "Hugs, Grisly Guardian": 1,
+        "Overprotect": 1
+      },
+      "reason": "unseen_card_combination",
+      "compatible_decks": 0,
+      "recorded_pool_violation_evaluation_only": false,
+      "copy_violations_evaluation_only": {},
+      "size_violation_evaluation_only": false
+    },
+    {
+      "game": "28e91d69333040d88b748c4dfe0619a9:4:1",
+      "turn": 6,
+      "public_departures": {
+        "Forest": 2,
+        "Three Tree Rootweaver": 1,
+        "Brazen Collector": 1,
+        "Sunshower Druid": 1,
+        "Longstalk Brawl": 1,
+        "Mountain": 1,
+        "Brambleguard Veteran": 1,
+        "Harnesser of Storms": 1
+      },
+      "reason": "unseen_card_combination",
+      "compatible_decks": 0,
+      "recorded_pool_violation_evaluation_only": false,
+      "copy_violations_evaluation_only": {},
+      "size_violation_evaluation_only": false
+    },
+    {
+      "game": "28e91d69333040d88b748c4dfe0619a9:4:1",
+      "turn": 6,
+      "public_departures": {
+        "Forest": 2,
+        "Three Tree Rootweaver": 1,
+        "Brazen Collector": 1,
+        "Sunshower Druid": 1,
+        "Longstalk Brawl": 1,
+        "Mountain": 1,
+        "Brambleguard Veteran": 1,
+        "Harnesser of Storms": 1
+      },
+      "reason": "unseen_card_combination",
+      "compatible_decks": 0,
+      "recorded_pool_violation_evaluation_only": false,
+      "copy_violations_evaluation_only": {},
+      "size_violation_evaluation_only": false
+    },
+    {
+      "game": "28e91d69333040d88b748c4dfe0619a9:4:1",
+      "turn": 7,
+      "public_departures": {
+        "Forest": 2,
+        "Three Tree Rootweaver": 1,
+        "Brazen Collector": 1,
+        "Sunshower Druid": 1,
+        "Longstalk Brawl": 1,
+        "Mountain": 1,
+        "Brambleguard Veteran": 1,
+        "Harnesser of Storms": 1,
+        "Treeguard Duo": 1
+      },
+      "reason": "unseen_card_combination",
+      "compatible_decks": 0,
+      "recorded_pool_violation_evaluation_only": false,
+      "copy_violations_evaluation_only": {},
+      "size_violation_evaluation_only": false
+    },
+    {
+      "game": "28e91d69333040d88b748c4dfe0619a9:4:1",
+      "turn": 7,
+      "public_departures": {
+        "Forest": 2,
+        "Three Tree Rootweaver": 1,
+        "Brazen Collector": 1,
+        "Sunshower Druid": 1,
+        "Longstalk Brawl": 1,
+        "Mountain": 1,
+        "Brambleguard Veteran": 1,
+        "Harnesser of Storms": 1,
+        "Treeguard Duo": 1
+      },
+      "reason": "unseen_card_combination",
+      "compatible_decks": 0,
+      "recorded_pool_violation_evaluation_only": false,
+      "copy_violations_evaluation_only": {},
+      "size_violation_evaluation_only": false
+    },
+    {
+      "game": "28e91d69333040d88b748c4dfe0619a9:6:1",
+      "turn": 5,
+      "public_departures": {
+        "Forest": 4,
+        "Sunshower Druid": 1,
+        "Mountain": 1,
+        "Roughshod Duo": 1,
+        "Treeguard Duo": 1,
+        "Rust-Shield Rampager": 1,
+        "Longstalk Brawl": 1
+      },
+      "reason": "unseen_card_combination",
+      "compatible_decks": 0,
+      "recorded_pool_violation_evaluation_only": false,
+      "copy_violations_evaluation_only": {},
+      "size_violation_evaluation_only": false
+    },
+    {
+      "game": "28e91d69333040d88b748c4dfe0619a9:6:1",
+      "turn": 6,
+      "public_departures": {
+        "Forest": 4,
+        "Sunshower Druid": 1,
+        "Mountain": 1,
+        "Roughshod Duo": 1,
+        "Treeguard Duo": 1,
+        "Rust-Shield Rampager": 1,
+        "Longstalk Brawl": 1
+      },
+      "reason": "unseen_card_combination",
+      "compatible_decks": 0,
+      "recorded_pool_violation_evaluation_only": false,
+      "copy_violations_evaluation_only": {},
+      "size_violation_evaluation_only": false
+    },
+    {
+      "game": "28e91d69333040d88b748c4dfe0619a9:6:1",
+      "turn": 6,
+      "public_departures": {
+        "Forest": 4,
+        "Sunshower Druid": 1,
+        "Mountain": 1,
+        "Roughshod Duo": 1,
+        "Treeguard Duo": 1,
+        "Rust-Shield Rampager": 1,
+        "Longstalk Brawl": 1
+      },
+      "reason": "unseen_card_combination",
+      "compatible_decks": 0,
+      "recorded_pool_violation_evaluation_only": false,
+      "copy_violations_evaluation_only": {},
+      "size_violation_evaluation_only": false
+    },
+    {
+      "game": "28e91d69333040d88b748c4dfe0619a9:6:1",
+      "turn": 7,
+      "public_departures": {
+        "Forest": 4,
+        "Sunshower Druid": 1,
+        "Mountain": 1,
+        "Roughshod Duo": 1,
+        "Treeguard Duo": 1,
+        "Rust-Shield Rampager": 1,
+        "Longstalk Brawl": 1
+      },
+      "reason": "unseen_card_combination",
+      "compatible_decks": 0,
+      "recorded_pool_violation_evaluation_only": false,
+      "copy_violations_evaluation_only": {},
+      "size_violation_evaluation_only": false
+    },
+    {
+      "game": "28e91d69333040d88b748c4dfe0619a9:6:1",
+      "turn": 7,
+      "public_departures": {
+        "Forest": 5,
+        "Sunshower Druid": 1,
+        "Mountain": 1,
+        "Roughshod Duo": 1,
+        "Treeguard Duo": 1,
+        "Rust-Shield Rampager": 1,
+        "Longstalk Brawl": 1
+      },
+      "reason": "unseen_card_combination",
+      "compatible_decks": 0,
+      "recorded_pool_violation_evaluation_only": false,
+      "copy_violations_evaluation_only": {},
+      "size_violation_evaluation_only": false
+    },
+    {
+      "game": "28e91d69333040d88b748c4dfe0619a9:6:1",
+      "turn": 8,
+      "public_departures": {
+        "Forest": 5,
+        "Sunshower Druid": 1,
+        "Mountain": 1,
+        "Roughshod Duo": 1,
+        "Treeguard Duo": 1,
+        "Rust-Shield Rampager": 1,
+        "Longstalk Brawl": 1,
+        "Overprotect": 1
+      },
+      "reason": "unseen_card_combination",
+      "compatible_decks": 0,
+      "recorded_pool_violation_evaluation_only": false,
+      "copy_violations_evaluation_only": {},
+      "size_violation_evaluation_only": false
+    },
+    {
+      "game": "28e91d69333040d88b748c4dfe0619a9:6:1",
+      "turn": 8,
+      "public_departures": {
+        "Forest": 5,
+        "Sunshower Druid": 1,
+        "Mountain": 1,
+        "Roughshod Duo": 1,
+        "Treeguard Duo": 1,
+        "Rust-Shield Rampager": 1,
+        "Longstalk Brawl": 1,
+        "Overprotect": 1,
+        "Three Tree Rootweaver": 1
+      },
+      "reason": "unseen_card_combination",
+      "compatible_decks": 0,
+      "recorded_pool_violation_evaluation_only": false,
+      "copy_violations_evaluation_only": {},
+      "size_violation_evaluation_only": false
+    }
+  ],
+  "split_seed": 42,
+  "source": "17Lands public data, CC BY 4.0",
+  "input_sha256": {
+    "data/replay_sample_5000.BLB.PremierDraft.csv.gz": "f2bc53322ce3d53b3602e5ed12df76532cb98a92c3ac66abea5f612faf99a3c4",
+    "data/cards.csv": "c1d4b32fc84cfbdac4ec805fe486732b73ee04b7d757134479848e75e96cd82b",
+    "data/game_data_public.BLB.PremierDraft.csv.gz": "61fed2a4db5854ca9f247eba9ea4176cf70a25ee253024928963335d32dbf281"
+  },
+  "limitations": [
+    "Recorded deck comparisons are evaluation-only, never inference inputs",
+    "Exceeding a recorded copy count flags possible unmodeled reuse/generated cards; it does not establish the cause",
+    "This audit retains the earlier split to reproduce the previous failures; the new tree experiment also excludes validation events"
+  ]
+}
