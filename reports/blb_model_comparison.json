@@ -1,0 +1,1965 @@
+{
+  "source": "17Lands public datasets, CC BY 4.0",
+  "settings": {
+    "train_snapshots": 1500,
+    "validation_snapshots": 400,
+    "test_snapshots": 800,
+    "iterations": 80,
+    "seed": 42,
+    "output": "reports/blb_model_comparison.json"
+  },
+  "versions": {
+    "numpy": "2.2.6",
+    "sklearn": "1.7.2"
+  },
+  "input_sha256": {
+    "data/replay_sample_5000.BLB.PremierDraft.csv.gz": "f2bc53322ce3d53b3602e5ed12df76532cb98a92c3ac66abea5f612faf99a3c4",
+    "data/cards.csv": "c1d4b32fc84cfbdac4ec805fe486732b73ee04b7d757134479848e75e96cd82b",
+    "data/game_data_public.BLB.PremierDraft.csv.gz": "61fed2a4db5854ca9f247eba9ea4176cf70a25ee253024928963335d32dbf281"
+  },
+  "split": {
+    "events": {
+      "test": 205,
+      "validation": 205,
+      "train": 615
+    },
+    "fingerprints": {
+      "test": "485ca0df43ef6e2e999b719f91d5469363265b8cf57fc3553f30e50137ba2ea0",
+      "validation": "47a4134c6fd3975a5b1f79715a49c40f4768989ae7439a9c5ab31493f2ff79af",
+      "train": "9e8beef0d6c3551e4d9d891a0a4b00c13045e4c07adb6d539e8eeee52bbbc55c"
+    },
+    "event_overlap": 0,
+    "prior_training_decks": 4096,
+    "selected_games": {
+      "train": 1500,
+      "validation": 400,
+      "test": 800
+    },
+    "retained_cases": {
+      "train": 1500,
+      "validation": 400,
+      "test": 800
+    },
+    "sampling": "one seeded random audited state per game, then seeded bounded game samples",
+    "cross_fitting": "two event folds for training generative features; validation/test excluded from every prior"
+  },
+  "reconstruction": {
+    "games": 5000,
+    "audited_snapshots": 64182,
+    "games_with_cases": 4999,
+    "stops": {
+      "unaccounted_hand_movement": 1407,
+      "departure_not_in_hand": 710,
+      "tutor": 246,
+      "opening_hand_size": 1
+    }
+  },
+  "full_test_coverage": {
+    "audited_states": 12448,
+    "finite_supported": 8631,
+    "smoothed_supported": 12448,
+    "recorded_pool_violation_evaluation_only": 18,
+    "recorded_pool_consistent_states": 12430,
+    "finite_supported_consistent": 8627,
+    "smoothed_supported_consistent": 12430
+  },
+  "full_test_failure_reasons": {
+    "supported": 8631,
+    "unseen_card_combination": 3803,
+    "exceeds_recorded_single_deck_accounting": 14
+  },
+  "sample_support": {
+    "total": 800,
+    "historical": 617,
+    "rescued": 183,
+    "recorded_pool_consistent": 800
+  },
+  "metrics": {
+    "all_audited_sample": {
+      "smoothed_prior": {
+        "cases": 800,
+        "Recall@5": 0.25115178571428604,
+        "Recall@10": 0.34677678571428566,
+        "Recall@20": 0.4980059523809524,
+        "MRR": 0.5243600952859105,
+        "Brier": 0.01279696017766626,
+        "LogLoss": 0.056041911318087154
+      },
+      "historical_prior": {
+        "cases": 617,
+        "Recall@5": 0.2643648221038823,
+        "Recall@10": 0.36449988423246166,
+        "Recall@20": 0.5037624450104192,
+        "MRR": 0.5971863215730355,
+        "Brier": 0.014444964556966963,
+        "LogLoss": 0.07197053515417964
+      },
+      "hand_size_only": {
+        "cases": 800,
+        "Recall@5": 0.2127529761904763,
+        "Recall@10": 0.2500089285714288,
+        "Recall@20": 0.3487648809523811,
+        "MRR": 0.3829333091096025,
+        "Brier": 0.013420210994626432,
+        "LogLoss": 0.0651625165093655
+      },
+      "all_absent": {
+        "cases": 800,
+        "Recall@5": 0.0,
+        "Recall@10": 0.0,
+        "Recall@20": 0.0,
+        "MRR": 0.0,
+        "Brier": 0.01420289855072458,
+        "LogLoss": 0.19622128067882597
+      },
+      "boosted_history_raw": {
+        "cases": 800,
+        "Recall@5": 0.27974404761904786,
+        "Recall@10": 0.3826815476190476,
+        "Recall@20": 0.5376413690476193,
+        "MRR": 0.5396123372053452,
+        "Brier": 0.012484576136217255,
+        "LogLoss": 0.05447250991699274
+      },
+      "boosted_history_calibrated": {
+        "cases": 800,
+        "Recall@5": 0.27974404761904786,
+        "Recall@10": 0.3826815476190476,
+        "Recall@20": 0.5376413690476193,
+        "MRR": 0.5396123372053452,
+        "Brier": 0.01248585903925324,
+        "LogLoss": 0.05446388076726504
+      },
+      "boosted_board_raw": {
+        "cases": 800,
+        "Recall@5": 0.2836934523809526,
+        "Recall@10": 0.38709970238095237,
+        "Recall@20": 0.5371309523809527,
+        "MRR": 0.5331540399636531,
+        "Brier": 0.012493820425782556,
+        "LogLoss": 0.05447840546832793
+      },
+      "boosted_board_calibrated": {
+        "cases": 800,
+        "Recall@5": 0.2836934523809526,
+        "Recall@10": 0.38709970238095237,
+        "Recall@20": 0.5371309523809527,
+        "MRR": 0.5331540399636531,
+        "Brier": 0.01249660455333667,
+        "LogLoss": 0.0544692490924632
+      }
+    },
+    "common_historical_support": {
+      "smoothed_prior": {
+        "cases": 617,
+        "Recall@5": 0.262838620050938,
+        "Recall@10": 0.3605425638650925,
+        "Recall@20": 0.5174847572740604,
+        "MRR": 0.6022645968985657,
+        "Brier": 0.01434451300782865,
+        "LogLoss": 0.06240977109377125
+      },
+      "historical_prior": {
+        "cases": 617,
+        "Recall@5": 0.2643648221038823,
+        "Recall@10": 0.36449988423246166,
+        "Recall@20": 0.5037624450104192,
+        "MRR": 0.5971863215730355,
+        "Brier": 0.014444964556966963,
+        "LogLoss": 0.07197053515417964
+      },
+      "hand_size_only": {
+        "cases": 617,
+        "Recall@5": 0.22750250829667398,
+        "Recall@10": 0.2651655475804587,
+        "Recall@20": 0.3655514393763991,
+        "MRR": 0.44864880098570453,
+        "Brier": 0.015132800206074432,
+        "LogLoss": 0.07232092199972621
+      },
+      "all_absent": {
+        "cases": 617,
+        "Recall@5": 0.0,
+        "Recall@10": 0.0,
+        "Recall@20": 0.0,
+        "MRR": 0.0,
+        "Brier": 0.016160477297817825,
+        "LogLoss": 0.22326622856975914
+      },
+      "boosted_history_raw": {
+        "cases": 617,
+        "Recall@5": 0.28502739831751217,
+        "Recall@10": 0.39842556147256347,
+        "Recall@20": 0.5482384039515321,
+        "MRR": 0.6112093892840925,
+        "Brier": 0.014076397655846576,
+        "LogLoss": 0.06103732197019608
+      },
+      "boosted_history_calibrated": {
+        "cases": 617,
+        "Recall@5": 0.28502739831751217,
+        "Recall@10": 0.39842556147256347,
+        "Recall@20": 0.5482384039515321,
+        "MRR": 0.6112093892840925,
+        "Brier": 0.014077583929571173,
+        "LogLoss": 0.06102706714608877
+      },
+      "boosted_board_raw": {
+        "cases": 617,
+        "Recall@5": 0.28879756116385,
+        "Recall@10": 0.40064250984024125,
+        "Recall@20": 0.5464961024928613,
+        "MRR": 0.6033274303481003,
+        "Brier": 0.01408141261955527,
+        "LogLoss": 0.06102398087814376
+      },
+      "boosted_board_calibrated": {
+        "cases": 617,
+        "Recall@5": 0.28879756116385,
+        "Recall@10": 0.40064250984024125,
+        "Recall@20": 0.5464961024928613,
+        "MRR": 0.6033274303481003,
+        "Brier": 0.014083767416801165,
+        "LogLoss": 0.061012627857265106
+      }
+    },
+    "rescued_sample": {
+      "smoothed_prior": {
+        "cases": 183,
+        "Recall@5": 0.21174863387978143,
+        "Recall@10": 0.30036429872495457,
+        "Recall@20": 0.4323315118397087,
+        "MRR": 0.2616984696301288,
+        "Brier": 0.007579254733894692,
+        "LogLoss": 0.034572132730124785
+      },
+      "historical_prior": {
+        "cases": 0
+      },
+      "hand_size_only": {
+        "cases": 183,
+        "Recall@5": 0.163023679417122,
+        "Recall@10": 0.1989071038251366,
+        "Recall@20": 0.29216757741347904,
+        "MRR": 0.16136796218307484,
+        "Brier": 0.007646071412859183,
+        "LogLoss": 0.0410273460855809
+      },
+      "all_absent": {
+        "cases": 183,
+        "Recall@5": 0.0,
+        "Recall@10": 0.0,
+        "Recall@20": 0.0,
+        "MRR": 0.0,
+        "Brier": 0.007602755999049672,
+        "LogLoss": 0.10503694817223691
+      },
+      "boosted_history_raw": {
+        "cases": 183,
+        "Recall@5": 0.26193078324225866,
+        "Recall@10": 0.32959927140255013,
+        "Recall@20": 0.501912568306011,
+        "MRR": 0.2982168118906622,
+        "Brier": 0.007117615056374152,
+        "LogLoss": 0.03233869004362438
+      },
+      "boosted_history_calibrated": {
+        "cases": 183,
+        "Recall@5": 0.26193078324225866,
+        "Recall@10": 0.32959927140255013,
+        "Recall@20": 0.501912568306011,
+        "MRR": 0.2982168118906622,
+        "Brier": 0.0071192237533179055,
+        "LogLoss": 0.032335541992761216
+      },
+      "boosted_board_raw": {
+        "cases": 183,
+        "Recall@5": 0.2664845173041895,
+        "Recall@10": 0.3414389799635702,
+        "Recall@20": 0.5055555555555556,
+        "MRR": 0.29655851063467076,
+        "Brier": 0.0071411188762865825,
+        "LogLoss": 0.03240944356747323
+      },
+      "boosted_board_calibrated": {
+        "cases": 183,
+        "Recall@5": 0.2664845173041895,
+        "Recall@10": 0.3414389799635702,
+        "Recall@20": 0.5055555555555556,
+        "MRR": 0.29655851063467076,
+        "Brier": 0.007145350527338895,
+        "LogLoss": 0.032407693366327865
+      }
+    },
+    "recorded_pool_consistent_sample": {
+      "smoothed_prior": {
+        "cases": 800,
+        "Recall@5": 0.25115178571428604,
+        "Recall@10": 0.34677678571428566,
+        "Recall@20": 0.4980059523809524,
+        "MRR": 0.5243600952859105,
+        "Brier": 0.01279696017766626,
+        "LogLoss": 0.056041911318087154
+      },
+      "historical_prior": {
+        "cases": 617,
+        "Recall@5": 0.2643648221038823,
+        "Recall@10": 0.36449988423246166,
+        "Recall@20": 0.5037624450104192,
+        "MRR": 0.5971863215730355,
+        "Brier": 0.014444964556966963,
+        "LogLoss": 0.07197053515417964
+      },
+      "hand_size_only": {
+        "cases": 800,
+        "Recall@5": 0.2127529761904763,
+        "Recall@10": 0.2500089285714288,
+        "Recall@20": 0.3487648809523811,
+        "MRR": 0.3829333091096025,
+        "Brier": 0.013420210994626432,
+        "LogLoss": 0.0651625165093655
+      },
+      "all_absent": {
+        "cases": 800,
+        "Recall@5": 0.0,
+        "Recall@10": 0.0,
+        "Recall@20": 0.0,
+        "MRR": 0.0,
+        "Brier": 0.01420289855072458,
+        "LogLoss": 0.19622128067882597
+      },
+      "boosted_history_raw": {
+        "cases": 800,
+        "Recall@5": 0.27974404761904786,
+        "Recall@10": 0.3826815476190476,
+        "Recall@20": 0.5376413690476193,
+        "MRR": 0.5396123372053452,
+        "Brier": 0.012484576136217255,
+        "LogLoss": 0.05447250991699274
+      },
+      "boosted_history_calibrated": {
+        "cases": 800,
+        "Recall@5": 0.27974404761904786,
+        "Recall@10": 0.3826815476190476,
+        "Recall@20": 0.5376413690476193,
+        "MRR": 0.5396123372053452,
+        "Brier": 0.01248585903925324,
+        "LogLoss": 0.05446388076726504
+      },
+      "boosted_board_raw": {
+        "cases": 800,
+        "Recall@5": 0.2836934523809526,
+        "Recall@10": 0.38709970238095237,
+        "Recall@20": 0.5371309523809527,
+        "MRR": 0.5331540399636531,
+        "Brier": 0.012493820425782556,
+        "LogLoss": 0.05447840546832793
+      },
+      "boosted_board_calibrated": {
+        "cases": 800,
+        "Recall@5": 0.2836934523809526,
+        "Recall@10": 0.38709970238095237,
+        "Recall@20": 0.5371309523809527,
+        "MRR": 0.5331540399636531,
+        "Brier": 0.01249660455333667,
+        "LogLoss": 0.0544692490924632
+      }
+    },
+    "excluding_basic_lands": {
+      "smoothed_prior": {
+        "cases": 800,
+        "Recall@5": 0.12775446428571421,
+        "Recall@10": 0.233202380952381,
+        "Recall@20": 0.4025625000000002,
+        "MRR": 0.22408779314587615,
+        "Brier": 0.010822291195047472,
+        "LogLoss": 0.050417211810631794
+      },
+      "historical_prior": {
+        "cases": 617,
+        "Recall@5": 0.14430616655089915,
+        "Recall@10": 0.25079107818167795,
+        "Recall@20": 0.4000540248514318,
+        "MRR": 0.2587065512780013,
+        "Brier": 0.012187730251295294,
+        "LogLoss": 0.06570577540388244
+      },
+      "hand_size_only": {
+        "cases": 800,
+        "Recall@5": 0.045419642857142846,
+        "Recall@10": 0.11194047619047626,
+        "Recall@20": 0.19644494047619043,
+        "MRR": 0.11120373442942658,
+        "Brier": 0.011104814779543554,
+        "LogLoss": 0.05818884783299842
+      },
+      "all_absent": {
+        "cases": 800,
+        "Recall@5": 0.0,
+        "Recall@10": 0.0,
+        "Recall@20": 0.0,
+        "MRR": 0.0,
+        "Brier": 0.01132841328413286,
+        "LogLoss": 0.15650880200400052
+      },
+      "boosted_history_raw": {
+        "cases": 800,
+        "Recall@5": 0.16490773809523807,
+        "Recall@10": 0.2854761904761908,
+        "Recall@20": 0.4373229166666668,
+        "MRR": 0.26708806934357865,
+        "Brier": 0.010729682921680951,
+        "LogLoss": 0.049314429340539236
+      },
+      "boosted_history_calibrated": {
+        "cases": 800,
+        "Recall@5": 0.16490773809523807,
+        "Recall@10": 0.2854761904761908,
+        "Recall@20": 0.4373229166666668,
+        "MRR": 0.26708806934357865,
+        "Brier": 0.010729681798598907,
+        "LogLoss": 0.04930106604691623
+      },
+      "boosted_board_raw": {
+        "cases": 800,
+        "Recall@5": 0.160720238095238,
+        "Recall@10": 0.2850193452380955,
+        "Recall@20": 0.44193750000000015,
+        "MRR": 0.27379444409751913,
+        "Brier": 0.010725842162132841,
+        "LogLoss": 0.04927462222538349
+      },
+      "boosted_board_calibrated": {
+        "cases": 800,
+        "Recall@5": 0.160720238095238,
+        "Recall@10": 0.2850193452380955,
+        "Recall@20": 0.44193750000000015,
+        "MRR": 0.27379444409751913,
+        "Brier": 0.010725683910481211,
+        "LogLoss": 0.04925697287066579
+      }
+    }
+  },
+  "calibration": {
+    "smoothed_prior": {
+      "expected_calibration_error": 0.0027147151564053283,
+      "card_snapshot_pairs": 220800,
+      "bins": [
+        {
+          "lower": 0.0,
+          "upper": 0.1,
+          "count": 217551,
+          "mean_probability": 0.009050158015267495,
+          "observed_fraction": 0.010783678309913537
+        },
+        {
+          "lower": 0.1,
+          "upper": 0.2,
+          "count": 1492,
+          "mean_probability": 0.13015531905058797,
+          "observed_fraction": 0.13404825737265416
+        },
+        {
+          "lower": 0.2,
+          "upper": 0.3,
+          "count": 443,
+          "mean_probability": 0.24461337734648722,
+          "observed_fraction": 0.22573363431151242
+        },
+        {
+          "lower": 0.3,
+          "upper": 0.4,
+          "count": 260,
+          "mean_probability": 0.3422352397518337,
+          "observed_fraction": 0.22692307692307692
+        },
+        {
+          "lower": 0.4,
+          "upper": 0.5,
+          "count": 273,
+          "mean_probability": 0.444909421841944,
+          "observed_fraction": 0.2564102564102564
+        },
+        {
+          "lower": 0.5,
+          "upper": 0.6,
+          "count": 290,
+          "mean_probability": 0.5497578310021387,
+          "observed_fraction": 0.3793103448275862
+        },
+        {
+          "lower": 0.6,
+          "upper": 0.7,
+          "count": 382,
+          "mean_probability": 0.6517994457428153,
+          "observed_fraction": 0.4973821989528796
+        },
+        {
+          "lower": 0.7,
+          "upper": 0.8,
+          "count": 107,
+          "mean_probability": 0.7255689638863271,
+          "observed_fraction": 0.5700934579439252
+        },
+        {
+          "lower": 0.8,
+          "upper": 0.9,
+          "count": 2,
+          "mean_probability": 0.8067849370991578,
+          "observed_fraction": 0.0
+        },
+        {
+          "lower": 0.9,
+          "upper": 1.0,
+          "count": 0,
+          "mean_probability": null,
+          "observed_fraction": null
+        }
+      ]
+    },
+    "historical_prior": {
+      "expected_calibration_error": 0.003141757657584969,
+      "card_snapshot_pairs": 170292,
+      "bins": [
+        {
+          "lower": 0.0,
+          "upper": 0.1,
+          "count": 166379,
+          "mean_probability": 0.009687341503262352,
+          "observed_fraction": 0.0115940112634407
+        },
+        {
+          "lower": 0.1,
+          "upper": 0.2,
+          "count": 2307,
+          "mean_probability": 0.12923996214357622,
+          "observed_fraction": 0.11573472041612484
+        },
+        {
+          "lower": 0.2,
+          "upper": 0.3,
+          "count": 475,
+          "mean_probability": 0.2430747166724619,
+          "observed_fraction": 0.1936842105263158
+        },
+        {
+          "lower": 0.3,
+          "upper": 0.4,
+          "count": 213,
+          "mean_probability": 0.3478856172382197,
+          "observed_fraction": 0.25821596244131456
+        },
+        {
+          "lower": 0.4,
+          "upper": 0.5,
+          "count": 188,
+          "mean_probability": 0.4493640223870939,
+          "observed_fraction": 0.32978723404255317
+        },
+        {
+          "lower": 0.5,
+          "upper": 0.6,
+          "count": 219,
+          "mean_probability": 0.5537731087803549,
+          "observed_fraction": 0.4018264840182648
+        },
+        {
+          "lower": 0.6,
+          "upper": 0.7,
+          "count": 345,
+          "mean_probability": 0.6538101882878508,
+          "observed_fraction": 0.5072463768115942
+        },
+        {
+          "lower": 0.7,
+          "upper": 0.8,
+          "count": 164,
+          "mean_probability": 0.7318327387586333,
+          "observed_fraction": 0.5121951219512195
+        },
+        {
+          "lower": 0.8,
+          "upper": 0.9,
+          "count": 2,
+          "mean_probability": 0.8639181464801846,
+          "observed_fraction": 0.0
+        },
+        {
+          "lower": 0.9,
+          "upper": 1.0,
+          "count": 0,
+          "mean_probability": null,
+          "observed_fraction": null
+        }
+      ]
+    },
+    "hand_size_only": {
+      "expected_calibration_error": 0.0032291515920837713,
+      "card_snapshot_pairs": 220800,
+      "bins": [
+        {
+          "lower": 0.0,
+          "upper": 0.1,
+          "count": 217165,
+          "mean_probability": 0.009290420447869136,
+          "observed_fraction": 0.011378444961204614
+        },
+        {
+          "lower": 0.1,
+          "upper": 0.2,
+          "count": 1143,
+          "mean_probability": 0.16251989688553214,
+          "observed_fraction": 0.08836395450568679
+        },
+        {
+          "lower": 0.2,
+          "upper": 0.3,
+          "count": 1290,
+          "mean_probability": 0.2451497538872299,
+          "observed_fraction": 0.19069767441860466
+        },
+        {
+          "lower": 0.3,
+          "upper": 0.4,
+          "count": 1113,
+          "mean_probability": 0.3455860295153713,
+          "observed_fraction": 0.2560646900269542
+        },
+        {
+          "lower": 0.4,
+          "upper": 0.5,
+          "count": 89,
+          "mean_probability": 0.4259567706550521,
+          "observed_fraction": 0.3707865168539326
+        },
+        {
+          "lower": 0.5,
+          "upper": 0.6,
+          "count": 0,
+          "mean_probability": null,
+          "observed_fraction": null
+        },
+        {
+          "lower": 0.6,
+          "upper": 0.7,
+          "count": 0,
+          "mean_probability": null,
+          "observed_fraction": null
+        },
+        {
+          "lower": 0.7,
+          "upper": 0.8,
+          "count": 0,
+          "mean_probability": null,
+          "observed_fraction": null
+        },
+        {
+          "lower": 0.8,
+          "upper": 0.9,
+          "count": 0,
+          "mean_probability": null,
+          "observed_fraction": null
+        },
+        {
+          "lower": 0.9,
+          "upper": 1.0,
+          "count": 0,
+          "mean_probability": null,
+          "observed_fraction": null
+        }
+      ]
+    },
+    "all_absent": {
+      "expected_calibration_error": 0.014202898550724638,
+      "card_snapshot_pairs": 220800,
+      "bins": [
+        {
+          "lower": 0.0,
+          "upper": 0.1,
+          "count": 220800,
+          "mean_probability": 0.0,
+          "observed_fraction": 0.014202898550724638
+        },
+        {
+          "lower": 0.1,
+          "upper": 0.2,
+          "count": 0,
+          "mean_probability": null,
+          "observed_fraction": null
+        },
+        {
+          "lower": 0.2,
+          "upper": 0.3,
+          "count": 0,
+          "mean_probability": null,
+          "observed_fraction": null
+        },
+        {
+          "lower": 0.3,
+          "upper": 0.4,
+          "count": 0,
+          "mean_probability": null,
+          "observed_fraction": null
+        },
+        {
+          "lower": 0.4,
+          "upper": 0.5,
+          "count": 0,
+          "mean_probability": null,
+          "observed_fraction": null
+        },
+        {
+          "lower": 0.5,
+          "upper": 0.6,
+          "count": 0,
+          "mean_probability": null,
+          "observed_fraction": null
+        },
+        {
+          "lower": 0.6,
+          "upper": 0.7,
+          "count": 0,
+          "mean_probability": null,
+          "observed_fraction": null
+        },
+        {
+          "lower": 0.7,
+          "upper": 0.8,
+          "count": 0,
+          "mean_probability": null,
+          "observed_fraction": null
+        },
+        {
+          "lower": 0.8,
+          "upper": 0.9,
+          "count": 0,
+          "mean_probability": null,
+          "observed_fraction": null
+        },
+        {
+          "lower": 0.9,
+          "upper": 1.0,
+          "count": 0,
+          "mean_probability": null,
+          "observed_fraction": null
+        }
+      ]
+    },
+    "boosted_history_raw": {
+      "expected_calibration_error": 0.00041880566334174483,
+      "card_snapshot_pairs": 220800,
+      "bins": [
+        {
+          "lower": 0.0,
+          "upper": 0.1,
+          "count": 216013,
+          "mean_probability": 0.009996709231613705,
+          "observed_fraction": 0.009818853494928547
+        },
+        {
+          "lower": 0.1,
+          "upper": 0.2,
+          "count": 3255,
+          "mean_probability": 0.1272035355873148,
+          "observed_fraction": 0.13701996927803378
+        },
+        {
+          "lower": 0.2,
+          "upper": 0.3,
+          "count": 432,
+          "mean_probability": 0.25280403765324905,
+          "observed_fraction": 0.24074074074074073
+        },
+        {
+          "lower": 0.3,
+          "upper": 0.4,
+          "count": 529,
+          "mean_probability": 0.32777605610106836,
+          "observed_fraction": 0.30623818525519847
+        },
+        {
+          "lower": 0.4,
+          "upper": 0.5,
+          "count": 186,
+          "mean_probability": 0.4552901153667599,
+          "observed_fraction": 0.45161290322580644
+        },
+        {
+          "lower": 0.5,
+          "upper": 0.6,
+          "count": 379,
+          "mean_probability": 0.5555358647521336,
+          "observed_fraction": 0.5620052770448549
+        },
+        {
+          "lower": 0.6,
+          "upper": 0.7,
+          "count": 6,
+          "mean_probability": 0.6066831844719939,
+          "observed_fraction": 1.0
+        },
+        {
+          "lower": 0.7,
+          "upper": 0.8,
+          "count": 0,
+          "mean_probability": null,
+          "observed_fraction": null
+        },
+        {
+          "lower": 0.8,
+          "upper": 0.9,
+          "count": 0,
+          "mean_probability": null,
+          "observed_fraction": null
+        },
+        {
+          "lower": 0.9,
+          "upper": 1.0,
+          "count": 0,
+          "mean_probability": null,
+          "observed_fraction": null
+        }
+      ]
+    },
+    "boosted_history_calibrated": {
+      "expected_calibration_error": 0.0004740621831232717,
+      "card_snapshot_pairs": 220800,
+      "bins": [
+        {
+          "lower": 0.0,
+          "upper": 0.1,
+          "count": 216000,
+          "mean_probability": 0.009651650187084937,
+          "observed_fraction": 0.009810185185185186
+        },
+        {
+          "lower": 0.1,
+          "upper": 0.2,
+          "count": 3254,
+          "mean_probability": 0.12770829661605634,
+          "observed_fraction": 0.13767670559311618
+        },
+        {
+          "lower": 0.2,
+          "upper": 0.3,
+          "count": 424,
+          "mean_probability": 0.25422657012399646,
+          "observed_fraction": 0.23113207547169812
+        },
+        {
+          "lower": 0.3,
+          "upper": 0.4,
+          "count": 534,
+          "mean_probability": 0.3328305881485908,
+          "observed_fraction": 0.299625468164794
+        },
+        {
+          "lower": 0.4,
+          "upper": 0.5,
+          "count": 164,
+          "mean_probability": 0.45282373852000446,
+          "observed_fraction": 0.4573170731707317
+        },
+        {
+          "lower": 0.5,
+          "upper": 0.6,
+          "count": 391,
+          "mean_probability": 0.5622596046862867,
+          "observed_fraction": 0.5447570332480819
+        },
+        {
+          "lower": 0.6,
+          "upper": 0.7,
+          "count": 33,
+          "mean_probability": 0.6094498329202183,
+          "observed_fraction": 0.696969696969697
+        },
+        {
+          "lower": 0.7,
+          "upper": 0.8,
+          "count": 0,
+          "mean_probability": null,
+          "observed_fraction": null
+        },
+        {
+          "lower": 0.8,
+          "upper": 0.9,
+          "count": 0,
+          "mean_probability": null,
+          "observed_fraction": null
+        },
+        {
+          "lower": 0.9,
+          "upper": 1.0,
+          "count": 0,
+          "mean_probability": null,
+          "observed_fraction": null
+        }
+      ]
+    },
+    "boosted_board_raw": {
+      "expected_calibration_error": 0.0006124185554789495,
+      "card_snapshot_pairs": 220800,
+      "bins": [
+        {
+          "lower": 0.0,
+          "upper": 0.1,
+          "count": 215936,
+          "mean_probability": 0.00999207223028644,
+          "observed_fraction": 0.009748258743331358
+        },
+        {
+          "lower": 0.1,
+          "upper": 0.2,
+          "count": 3359,
+          "mean_probability": 0.12536064063692645,
+          "observed_fraction": 0.14081571896397738
+        },
+        {
+          "lower": 0.2,
+          "upper": 0.3,
+          "count": 417,
+          "mean_probability": 0.2547143373325562,
+          "observed_fraction": 0.23261390887290168
+        },
+        {
+          "lower": 0.3,
+          "upper": 0.4,
+          "count": 495,
+          "mean_probability": 0.331879193570995,
+          "observed_fraction": 0.30303030303030304
+        },
+        {
+          "lower": 0.4,
+          "upper": 0.5,
+          "count": 193,
+          "mean_probability": 0.454671096507612,
+          "observed_fraction": 0.44559585492227977
+        },
+        {
+          "lower": 0.5,
+          "upper": 0.6,
+          "count": 400,
+          "mean_probability": 0.5489682532030806,
+          "observed_fraction": 0.5625
+        },
+        {
+          "lower": 0.6,
+          "upper": 0.7,
+          "count": 0,
+          "mean_probability": null,
+          "observed_fraction": null
+        },
+        {
+          "lower": 0.7,
+          "upper": 0.8,
+          "count": 0,
+          "mean_probability": null,
+          "observed_fraction": null
+        },
+        {
+          "lower": 0.8,
+          "upper": 0.9,
+          "count": 0,
+          "mean_probability": null,
+          "observed_fraction": null
+        },
+        {
+          "lower": 0.9,
+          "upper": 1.0,
+          "count": 0,
+          "mean_probability": null,
+          "observed_fraction": null
+        }
+      ]
+    },
+    "boosted_board_calibrated": {
+      "expected_calibration_error": 0.0005562787829441144,
+      "card_snapshot_pairs": 220800,
+      "bins": [
+        {
+          "lower": 0.0,
+          "upper": 0.1,
+          "count": 215892,
+          "mean_probability": 0.009571534892868251,
+          "observed_fraction": 0.009740981601912066
+        },
+        {
+          "lower": 0.1,
+          "upper": 0.2,
+          "count": 3384,
+          "mean_probability": 0.12625025980377366,
+          "observed_fraction": 0.1388888888888889
+        },
+        {
+          "lower": 0.2,
+          "upper": 0.3,
+          "count": 378,
+          "mean_probability": 0.25401751623953706,
+          "observed_fraction": 0.21957671957671956
+        },
+        {
+          "lower": 0.3,
+          "upper": 0.4,
+          "count": 539,
+          "mean_probability": 0.3384825334522532,
+          "observed_fraction": 0.3079777365491651
+        },
+        {
+          "lower": 0.4,
+          "upper": 0.5,
+          "count": 170,
+          "mean_probability": 0.45966849803916626,
+          "observed_fraction": 0.4176470588235294
+        },
+        {
+          "lower": 0.5,
+          "upper": 0.6,
+          "count": 413,
+          "mean_probability": 0.5628146038480045,
+          "observed_fraction": 0.549636803874092
+        },
+        {
+          "lower": 0.6,
+          "upper": 0.7,
+          "count": 24,
+          "mean_probability": 0.6071557160021075,
+          "observed_fraction": 0.6666666666666666
+        },
+        {
+          "lower": 0.7,
+          "upper": 0.8,
+          "count": 0,
+          "mean_probability": null,
+          "observed_fraction": null
+        },
+        {
+          "lower": 0.8,
+          "upper": 0.9,
+          "count": 0,
+          "mean_probability": null,
+          "observed_fraction": null
+        },
+        {
+          "lower": 0.9,
+          "upper": 1.0,
+          "count": 0,
+          "mean_probability": null,
+          "observed_fraction": null
+        }
+      ]
+    }
+  },
+  "paired_event_bootstrap": {
+    "smoothed_prior minus historical_prior": {
+      "Recall@20": {
+        "estimate": 0.013722312263641269,
+        "ci95": [
+          -0.0012088455461636677,
+          0.02814932639722556
+        ],
+        "cases": 617
+      },
+      "Brier": {
+        "estimate": -0.00010045154913830014,
+        "ci95": [
+          -0.00013428280790407036,
+          -6.692767355496626e-05
+        ],
+        "cases": 617
+      }
+    },
+    "boosted_board_calibrated minus smoothed_prior": {
+      "Recall@20": {
+        "estimate": 0.03912499999999999,
+        "ci95": [
+          0.0242700991906569,
+          0.05486556031774926
+        ],
+        "cases": 800
+      },
+      "Brier": {
+        "estimate": -0.0003003556243296004,
+        "ci95": [
+          -0.0003738393615477498,
+          -0.00022863375316733083
+        ],
+        "cases": 800
+      }
+    },
+    "boosted_board_calibrated minus boosted_history_calibrated": {
+      "Recall@20": {
+        "estimate": -0.0005104166666666673,
+        "ci95": [
+          -0.00811339477118902,
+          0.00772645912197539
+        ],
+        "cases": 800
+      },
+      "Brier": {
+        "estimate": 1.0745514083432905e-05,
+        "ci95": [
+          -8.500880807555752e-06,
+          3.0861324408877604e-05
+        ],
+        "cases": 800
+      }
+    }
+  },
+  "feature_names": [
+    "prior_probability",
+    "observed_copies",
+    "turns_since_reveal",
+    "hand_size",
+    "opening_size",
+    "turn",
+    "target_turn",
+    "draws",
+    "named_departures",
+    "unknown_departures",
+    "mana_value",
+    "is_basic",
+    "is_land",
+    "is_creature",
+    "is_instant",
+    "is_sorcery",
+    "is_artifact",
+    "is_enchantment",
+    "is_planeswalker",
+    "color_W",
+    "color_U",
+    "color_B",
+    "color_R",
+    "color_G",
+    "target_life",
+    "observer_life",
+    "target_land_count",
+    "observer_land_count",
+    "target_creature_count",
+    "observer_creature_count",
+    "target_other_count",
+    "observer_other_count",
+    "candidate_on_target_board",
+    "candidate_on_observer_board",
+    "target_land_W",
+    "target_land_U",
+    "target_land_B",
+    "target_land_R",
+    "target_land_G"
+  ],
+  "examples": [
+    {
+      "game": "0f762f8edfec4151917181815151f337:6:1",
+      "turn": 7,
+      "actual_hand_evaluation_only": {
+        "Curious Forager": 1,
+        "Nocturnal Hunger": 1
+      },
+      "top_smoothed": [
+        [
+          "Forest",
+          0.368136728997361
+        ],
+        [
+          "Swamp",
+          0.34705942539342904
+        ],
+        [
+          "Corpseberry Cultivator",
+          0.05945551364965046
+        ],
+        [
+          "Savor",
+          0.0519281738361337
+        ],
+        [
+          "Daggerfang Duo",
+          0.051806225438256234
+        ],
+        [
+          "Cache Grab",
+          0.049478430364942955
+        ],
+        [
+          "Bakersbane Duo",
+          0.04140552344267183
+        ],
+        [
+          "Three Tree Rootweaver",
+          0.038684606268196996
+        ],
+        [
+          "Bushy Bodyguard",
+          0.036167081803494795
+        ],
+        [
+          "Treetop Sentries",
+          0.033492932984059295
+        ]
+      ],
+      "top_boosted": [
+        [
+          "Cache Grab",
+          0.07827384978620076
+        ],
+        [
+          "Treetop Sentries",
+          0.072135601641384
+        ],
+        [
+          "Swamp",
+          0.07085985846613088
+        ],
+        [
+          "Forest",
+          0.06342362972145874
+        ],
+        [
+          "Early Winter",
+          0.058601809448156635
+        ],
+        [
+          "Wick's Patrol",
+          0.054296577379966196
+        ],
+        [
+          "Glidedive Duo",
+          0.05168633582805304
+        ],
+        [
+          "Polliwallop",
+          0.04950808781277136
+        ],
+        [
+          "Nocturnal Hunger",
+          0.045945649313103507
+        ],
+        [
+          "Galewind Moose",
+          0.042968655773082814
+        ]
+      ],
+      "public_input": {
+        "history": {
+          "opening_hand_size": 7,
+          "steps": [
+            {
+              "turn": 1,
+              "active_player": "target",
+              "draws": 0,
+              "departed": [
+                "Forest"
+              ],
+              "hand_size": 6,
+              "unknown_departures": 0
+            },
+            {
+              "turn": 1,
+              "active_player": "observer",
+              "draws": 0,
+              "departed": [],
+              "hand_size": 6,
+              "unknown_departures": 0
+            },
+            {
+              "turn": 2,
+              "active_player": "target",
+              "draws": 1,
+              "departed": [
+                "Swamp",
+                "Three Tree Rootweaver"
+              ],
+              "hand_size": 5,
+              "unknown_departures": 0
+            },
+            {
+              "turn": 2,
+              "active_player": "observer",
+              "draws": 0,
+              "departed": [],
+              "hand_size": 5,
+              "unknown_departures": 0
+            },
+            {
+              "turn": 3,
+              "active_player": "target",
+              "draws": 1,
+              "departed": [
+                "Forest",
+                "Corpseberry Cultivator"
+              ],
+              "hand_size": 4,
+              "unknown_departures": 0
+            },
+            {
+              "turn": 3,
+              "active_player": "observer",
+              "draws": 0,
+              "departed": [],
+              "hand_size": 4,
+              "unknown_departures": 0
+            },
+            {
+              "turn": 4,
+              "active_player": "target",
+              "draws": 1,
+              "departed": [
+                "Consumed by Greed"
+              ],
+              "hand_size": 4,
+              "unknown_departures": 0
+            },
+            {
+              "turn": 4,
+              "active_player": "observer",
+              "draws": 0,
+              "departed": [],
+              "hand_size": 4,
+              "unknown_departures": 0
+            },
+            {
+              "turn": 5,
+              "active_player": "target",
+              "draws": 1,
+              "departed": [
+                "Daggerfang Duo"
+              ],
+              "hand_size": 4,
+              "unknown_departures": 0
+            },
+            {
+              "turn": 5,
+              "active_player": "observer",
+              "draws": 0,
+              "departed": [],
+              "hand_size": 4,
+              "unknown_departures": 0
+            },
+            {
+              "turn": 6,
+              "active_player": "target",
+              "draws": 1,
+              "departed": [
+                "Swamp",
+                "Barkform Harvester"
+              ],
+              "hand_size": 3,
+              "unknown_departures": 0
+            },
+            {
+              "turn": 6,
+              "active_player": "observer",
+              "draws": 0,
+              "departed": [],
+              "hand_size": 3,
+              "unknown_departures": 0
+            },
+            {
+              "turn": 7,
+              "active_player": "target",
+              "draws": 1,
+              "departed": [
+                "Bushy Bodyguard",
+                "Savor"
+              ],
+              "hand_size": 2,
+              "unknown_departures": 0
+            }
+          ]
+        },
+        "board": {
+          "target": {
+            "life": 20.0,
+            "lands": [
+              "Swamp",
+              "Forest",
+              "Swamp",
+              "Forest"
+            ],
+            "creatures": [
+              "Bushy Bodyguard",
+              "Barkform Harvester",
+              "Corpseberry Cultivator"
+            ],
+            "other": [
+              "Food"
+            ]
+          },
+          "observer": {
+            "life": 9.0,
+            "lands": [
+              "Oakhollow Village",
+              "Island",
+              "Forest"
+            ],
+            "creatures": [],
+            "other": [
+              "Short Bow"
+            ]
+          }
+        }
+      }
+    },
+    {
+      "game": "006b4f25968c49c882072828a06644fb:2:1",
+      "turn": 7,
+      "actual_hand_evaluation_only": {},
+      "top_smoothed": [
+        [
+          "Agate Assault",
+          0.0
+        ],
+        [
+          "Agate-Blade Assassin",
+          0.0
+        ],
+        [
+          "Alania's Pathmaker",
+          0.0
+        ],
+        [
+          "Alania, Divergent Storm",
+          0.0
+        ],
+        [
+          "Artist's Talent",
+          0.0
+        ],
+        [
+          "Azure Beastbinder",
+          0.0
+        ],
+        [
+          "Bakersbane Duo",
+          0.0
+        ],
+        [
+          "Bandit's Talent",
+          0.0
+        ],
+        [
+          "Banishing Light",
+          0.0
+        ],
+        [
+          "Bark-Knuckle Boxer",
+          0.0
+        ]
+      ],
+      "top_boosted": [
+        [
+          "Agate Assault",
+          0.0
+        ],
+        [
+          "Agate-Blade Assassin",
+          0.0
+        ],
+        [
+          "Alania's Pathmaker",
+          0.0
+        ],
+        [
+          "Alania, Divergent Storm",
+          0.0
+        ],
+        [
+          "Artist's Talent",
+          0.0
+        ],
+        [
+          "Azure Beastbinder",
+          0.0
+        ],
+        [
+          "Bakersbane Duo",
+          0.0
+        ],
+        [
+          "Bandit's Talent",
+          0.0
+        ],
+        [
+          "Banishing Light",
+          0.0
+        ],
+        [
+          "Bark-Knuckle Boxer",
+          0.0
+        ]
+      ],
+      "public_input": {
+        "history": {
+          "opening_hand_size": 7,
+          "steps": [
+            {
+              "turn": 1,
+              "active_player": "target",
+              "draws": 0,
+              "departed": [
+                "Plains"
+              ],
+              "hand_size": 6,
+              "unknown_departures": 0
+            },
+            {
+              "turn": 1,
+              "active_player": "observer",
+              "draws": 0,
+              "departed": [],
+              "hand_size": 6,
+              "unknown_departures": 0
+            },
+            {
+              "turn": 2,
+              "active_player": "target",
+              "draws": 1,
+              "departed": [
+                "Swamp",
+                "Carrot Cake"
+              ],
+              "hand_size": 5,
+              "unknown_departures": 0
+            },
+            {
+              "turn": 2,
+              "active_player": "observer",
+              "draws": 0,
+              "departed": [],
+              "hand_size": 5,
+              "unknown_departures": 0
+            },
+            {
+              "turn": 3,
+              "active_player": "target",
+              "draws": 1,
+              "departed": [
+                "Plains",
+                "Savor"
+              ],
+              "hand_size": 4,
+              "unknown_departures": 0
+            },
+            {
+              "turn": 3,
+              "active_player": "observer",
+              "draws": 0,
+              "departed": [],
+              "hand_size": 4,
+              "unknown_departures": 0
+            },
+            {
+              "turn": 4,
+              "active_player": "target",
+              "draws": 1,
+              "departed": [
+                "Swamp",
+                "Warren Elder"
+              ],
+              "hand_size": 3,
+              "unknown_departures": 0
+            },
+            {
+              "turn": 4,
+              "active_player": "observer",
+              "draws": 0,
+              "departed": [],
+              "hand_size": 3,
+              "unknown_departures": 0
+            },
+            {
+              "turn": 5,
+              "active_player": "target",
+              "draws": 1,
+              "departed": [
+                "Plains",
+                "Starseer Mentor"
+              ],
+              "hand_size": 2,
+              "unknown_departures": 0
+            },
+            {
+              "turn": 5,
+              "active_player": "observer",
+              "draws": 0,
+              "departed": [],
+              "hand_size": 2,
+              "unknown_departures": 0
+            },
+            {
+              "turn": 6,
+              "active_player": "target",
+              "draws": 1,
+              "departed": [
+                "Plains",
+                "Starseer Mentor"
+              ],
+              "hand_size": 1,
+              "unknown_departures": 0
+            },
+            {
+              "turn": 6,
+              "active_player": "observer",
+              "draws": 0,
+              "departed": [],
+              "hand_size": 1,
+              "unknown_departures": 0
+            },
+            {
+              "turn": 7,
+              "active_player": "target",
+              "draws": 1,
+              "departed": [
+                "Starlit Soothsayer",
+                "Moonrise Cleric"
+              ],
+              "hand_size": 0,
+              "unknown_departures": 0
+            }
+          ]
+        },
+        "board": {
+          "target": {
+            "life": 12.0,
+            "lands": [
+              "Plains",
+              "Plains",
+              "Swamp",
+              "Plains",
+              "Swamp",
+              "Plains"
+            ],
+            "creatures": [
+              "Moonrise Cleric",
+              "Starlit Soothsayer",
+              "Starseer Mentor"
+            ],
+            "other": [
+              "Food"
+            ]
+          },
+          "observer": {
+            "life": 15.0,
+            "lands": [
+              "Forest",
+              "Mountain",
+              "Plains",
+              "Mountain",
+              "Forest",
+              "Plains"
+            ],
+            "creatures": [
+              "Druid of the Spade",
+              "Brave-Kin Duo"
+            ],
+            "other": []
+          }
+        }
+      }
+    },
+    {
+      "game": "cdd374b70bea4f949137744d42984766:4:1",
+      "turn": 5,
+      "actual_hand_evaluation_only": {
+        "Swamp": 1,
+        "Honored Dreyleader": 1
+      },
+      "top_smoothed": [
+        [
+          "Forest",
+          0.33008264623090533
+        ],
+        [
+          "Swamp",
+          0.2999425523097444
+        ],
+        [
+          "Cache Grab",
+          0.057501102909243214
+        ],
+        [
+          "Bakersbane Duo",
+          0.04814182439596306
+        ],
+        [
+          "Corpseberry Cultivator",
+          0.046888210256357504
+        ],
+        [
+          "Treetop Sentries",
+          0.03895114886382491
+        ],
+        [
+          "Savor",
+          0.03806362892800181
+        ],
+        [
+          "Daggerfang Duo",
+          0.0379204904474246
+        ],
+        [
+          "Thought-Stalker Warlock",
+          0.03618013769043672
+        ],
+        [
+          "Bonebind Orator",
+          0.03565332585608063
+        ]
+      ],
+      "top_boosted": [
+        [
+          "Forest",
+          0.11759262054853219
+        ],
+        [
+          "Cache Grab",
+          0.10849238633458762
+        ],
+        [
+          "Swamp",
+          0.0932835026042847
+        ],
+        [
+          "Treetop Sentries",
+          0.0729923943642866
+        ],
+        [
+          "Wick's Patrol",
+          0.06596546947643035
+        ],
+        [
+          "Early Winter",
+          0.0574668663662147
+        ],
+        [
+          "Savor",
+          0.05455580985345869
+        ],
+        [
+          "Glidedive Duo",
+          0.05204006220251734
+        ],
+        [
+          "Polliwallop",
+          0.050796077410633536
+        ],
+        [
+          "Nocturnal Hunger",
+          0.04731990602619115
+        ]
+      ],
+      "public_input": {
+        "history": {
+          "opening_hand_size": 7,
+          "steps": [
+            {
+              "turn": 1,
+              "active_player": "target",
+              "draws": 0,
+              "departed": [
+                "Forest"
+              ],
+              "hand_size": 6,
+              "unknown_departures": 0
+            },
+            {
+              "turn": 1,
+              "active_player": "observer",
+              "draws": 0,
+              "departed": [],
+              "hand_size": 6,
+              "unknown_departures": 0
+            },
+            {
+              "turn": 2,
+              "active_player": "target",
+              "draws": 1,
+              "departed": [
+                "Swamp"
+              ],
+              "hand_size": 6,
+              "unknown_departures": 0
+            },
+            {
+              "turn": 2,
+              "active_player": "observer",
+              "draws": 0,
+              "departed": [],
+              "hand_size": 6,
+              "unknown_departures": 0
+            },
+            {
+              "turn": 3,
+              "active_player": "target",
+              "draws": 1,
+              "departed": [
+                "Forest",
+                "Clifftop Lookout"
+              ],
+              "hand_size": 5,
+              "unknown_departures": 0
+            },
+            {
+              "turn": 3,
+              "active_player": "observer",
+              "draws": 0,
+              "departed": [],
+              "hand_size": 5,
+              "unknown_departures": 0
+            },
+            {
+              "turn": 4,
+              "active_player": "target",
+              "draws": 1,
+              "departed": [
+                "Swamp",
+                "Thought-Stalker Warlock"
+              ],
+              "hand_size": 4,
+              "unknown_departures": 0
+            },
+            {
+              "turn": 4,
+              "active_player": "observer",
+              "draws": 0,
+              "departed": [],
+              "hand_size": 4,
+              "unknown_departures": 0
+            },
+            {
+              "turn": 5,
+              "active_player": "target",
+              "draws": 1,
+              "departed": [
+                "Forest",
+                "Cindering Cutthroat",
+                "Druid of the Spade"
+              ],
+              "hand_size": 2,
+              "unknown_departures": 0
+            }
+          ]
+        },
+        "board": {
+          "target": {
+            "life": 12.0,
+            "lands": [
+              "Forest",
+              "Swamp",
+              "Swamp",
+              "Forest",
+              "Swamp",
+              "Forest"
+            ],
+            "creatures": [
+              "Druid of the Spade",
+              "Cindering Cutthroat",
+              "Clifftop Lookout"
+            ],
+            "other": []
+          },
+          "observer": {
+            "life": 18.0,
+            "lands": [
+              "Plains",
+              "Mountain",
+              "Plains",
+              "Plains"
+            ],
+            "creatures": [
+              "Nettle Guard"
+            ],
+            "other": [
+              "Banishing Light",
+              "War Squeak"
+            ]
+          }
+        }
+      }
+    }
+  ],
+  "artifacts": {
+    "path": "data/hand_research_models.joblib",
+    "bytes": 1824662,
+    "sha256": "d86ea90a3f7239121d47dc82273431e6bb3bbb7d9e1189e2adeec135382256b1"
+  },
+  "elapsed_seconds": 51.929659063000145,
+  "limitations": [
+    "File-prefix BLB sample; no cross-set generalization claim",
+    "Fixed hyperparameters, no test-based selection; sigmoid calibration uses validation labels only",
+    "All 276 candidate cards retained; no negative sampling or class reweighting",
+    "Recorded deck diagnostics never affect model inputs or main sample selection",
+    "No hand-size/copy joint consistency guarantee for independent tree scores; finite prior zero-probability constraints are enforced",
+    "Flexible prior keeps empirical size/land shapes; it does not handle returns, tutors, exile casting, or generated cards",
+    "Groups are color pairs, not learned tribal archetypes; no card rules-text features",
+    "Coverage is reported on all audited held-out states, accuracy on a bounded one-state-per-game sample",
+    "Mulligan kept hands and unidentified departures retain the baseline approximations",
+    "No website or previous benchmark results are replaced by this experiment"
+  ],
+  "generative_parameters": {
+    "concentration": 50,
+    "shrinkage": 50,
+    "floor": 0.01,
+    "color_groups": 11,
+    "size_land_components": 95
+  },
+  "tree_parameters": {
+    "boosted_history": {
+      "categorical_features": "from_dtype",
+      "class_weight": null,
+      "early_stopping": false,
+      "interaction_cst": null,
+      "l2_regularization": 10,
+      "learning_rate": 0.08,
+      "loss": "log_loss",
+      "max_bins": 255,
+      "max_depth": null,
+      "max_features": 1.0,
+      "max_iter": 80,
+      "max_leaf_nodes": 15,
+      "min_samples_leaf": 40,
+      "monotonic_cst": null,
+      "n_iter_no_change": 10,
+      "random_state": 42,
+      "scoring": "loss",
+      "tol": 1e-07,
+      "validation_fraction": 0.1,
+      "verbose": 0,
+      "warm_start": false
+    },
+    "boosted_board": {
+      "categorical_features": "from_dtype",
+      "class_weight": null,
+      "early_stopping": false,
+      "interaction_cst": null,
+      "l2_regularization": 10,
+      "learning_rate": 0.08,
+      "loss": "log_loss",
+      "max_bins": 255,
+      "max_depth": null,
+      "max_features": 1.0,
+      "max_iter": 80,
+      "max_leaf_nodes": 15,
+      "min_samples_leaf": 40,
+      "monotonic_cst": null,
+      "n_iter_no_change": 10,
+      "random_state": 42,
+      "scoring": "loss",
+      "tol": 1e-07,
+      "validation_fraction": 0.1,
+      "verbose": 0,
+      "warm_start": false
+    }
+  },
+  "calibration_parameters": {
+    "boosted_history": {
+      "slope": 1.0256684129616742,
+      "intercept": 0.05753215453840846
+    },
+    "boosted_board": {
+      "slope": 1.0338404669343104,
+      "intercept": 0.08047184927027985
+    }
+  },
+  "artifact_roundtrip_verified": true
+}

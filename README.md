@@ -182,3 +182,77 @@ Snapshots still average within games, then games receive equal weight.
 Intervals describe uncertainty within the filtered prefix sample; they do not
 correct selection bias or establish full-dataset performance. See the
 [expanded experiment](reports/blb_hands_5000.md).
+
+## Replay coverage improvements
+
+Unidentified hand departures can now be represented by their **public count**
+without giving the model their private identities. For example, if a hand
+shrinks from seven to six with no recorded target draw or named departure,
+`unknown_departures=1` records the net loss. It does not claim a particular
+card was discarded or cast. This is opt-in, so earlier experiments retain their
+strict reconstruction behavior.
+
+The independent identity audit still has to pass: after recorded draws and
+named departures, the actual hand must be a subset with exactly the specified
+number of cards removed. Unexplained additions, replacements, tutors, and
+named departures absent from the reconstructed hand still stop evaluation.
+Missing gains are never treated as draws just to make counts match.
+
+The hand baseline marginalizes unidentified departures under its existing
+random-selection assumption. It retains their unknown identities in a latent
+pool and accounts for their count when checking whether future draws are
+possible. It does not learn why those cards left the hand. This is a weaker
+observation than a named card departure; card-type accounting still does not
+establish exact zone provenance.
+
+Compare strict and expanded reconstruction on the same 5,000 replay rows:
+
+```bash
+.venv/bin/python examples/audit_replays.py \
+  --replays data/replay_sample_5000.BLB.PremierDraft.csv.gz \
+  --max-games 5000 --turns 3 10 30 --include-mulligans \
+  --compare-unknown-departures --output reports/blb_coverage_improvement.json
+```
+
+Run hand inference with the expanded coverage:
+
+```bash
+.venv/bin/python examples/replay_hands.py \
+  --replays data/replay_sample_5000.BLB.PremierDraft.csv.gz \
+  --max-games 5000 --max-turn 30 --include-mulligans \
+  --allow-unknown-departures --output reports/blb_hands_expanded_coverage.json
+```
+
+The audit distinguishes all available recorded states, accepted hand labels,
+and games reaching their recorded ending. Inference can have lower coverage
+because no training deck is compatible with a public history; these exclusions
+are counted separately. See [the coverage report](reports/blb_coverage_improvement.md).
+
+## Flexible priors and boosted-tree research
+
+The optional research experiment audits finite-prior failures, fits a smoothed
+color-group/deck-shape prior, and compares shared boosted card-presence models
+with and without public board features. Its event-disjoint training/validation/
+test split and two-fold training-prior cross-fitting prevent draft leakage.
+Calibration uses validation labels only. Every candidate card is retained;
+negative sampling and class reweighting are unnecessary at this scale.
+
+```bash
+.venv/bin/python -m pip install -e '.[dev,research]'
+.venv/bin/python examples/audit_prior_failures.py
+OPENBLAS_NUM_THREADS=4 OMP_NUM_THREADS=4 .venv/bin/python examples/compare_hand_models.py
+.venv/bin/python examples/predict_research_hand.py data/public_hand_example.json
+```
+
+Use `--train-snapshots`, `--validation-snapshots`, `--test-snapshots`, and
+`--iterations` to change the bounded experiment size. The runner saves its local
+model artifacts under `data/`; inference takes public-history JSON, not hidden
+hands or held-out decklists. Core baselines still need no research dependencies.
+
+Read [the research report](reports/blb_model_comparison.md) for the failure
+audit, exact prior assumptions, coverage, fair common-state comparisons,
+calibration, results without basic lands, and uncertainty intervals. The
+observed Recall@20 rises from 49.8% with the flexible prior to about 53.7–53.8%
+with trees on the same 800 test states. Additional board features did not show
+a clear gain over history features in this run. These remain research models;
+the website's saved examples use the previous baseline.
