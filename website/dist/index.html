@@ -1,0 +1,72 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="description" content="Explore real MTG Limited replay histories, hidden-hand predictions, and research progress.">
+<title>Hidden Hand · MTG Research Lab</title>
+<link rel="stylesheet" href="styles.css">
+<link rel="stylesheet" href="board.css">
+</head>
+<body>
+<aside class="sidebar">
+ <a class="brand" href="#explorer"><span class="brand-mark" aria-hidden="true">◈</span><span>Hidden Hand<small>MTG RESEARCH LAB</small></span></a>
+ <div class="nav-caption">WORKSPACE</div>
+ <nav aria-label="Primary"><button class="nav-item active" data-view="explorer"><span aria-hidden="true">◫</span> Battlefield replay</button><button class="nav-item" data-view="progress"><span aria-hidden="true">↗</span> Research progress</button></nav>
+ <div class="sidebar-note"><span class="live-dot"></span>Interpretable baseline<p>Historical decks.<br>Public game history.<br>Probabilities you can inspect.</p></div>
+ <div class="sidebar-bottom">Bloomburrow · Premier Draft<br><a href="https://www.17lands.com/public_datasets" target="_blank" rel="noopener">Data from 17Lands ↗</a></div>
+</aside>
+<main>
+ <header class="topbar"><span>Limited / Opponent modeling</span><span class="pill">Research preview <span class="live-dot"></span></span></header>
+ <section id="explorer" class="view">
+  <div class="heading"><div><div class="eyebrow">BLOOMBURROW · LIMITED REPLAY</div><h1>The battlefield. The hidden hand.</h1><p>Watch real cards enter play, and see what the model thinks your opponent is holding.</p></div><span class="set-badge">BLB <small>Premier Draft</small></span></div>
+  <div id="loading" class="loading" role="status">Preparing the battlefield…</div>
+  <div id="explorer-content" hidden>
+   <div class="controls"><div><label for="game-select">Replay</label><select id="game-select"></select></div><div class="replay-caption"><span class="tag">REAL HELD-OUT GAME</span><span id="game-meta"></span></div><button id="reveal" class="button outline" aria-pressed="false">Reveal opponent’s hand</button></div>
+   <div class="arena-layout">
+    <div class="board-column">
+     <section class="battlefield" aria-label="Public battlefield at this replay snapshot">
+      <div class="board-grain" aria-hidden="true"></div>
+      <section class="player-half target-half" aria-label="Opponent’s battlefield">
+       <div class="player-heading"><div class="player-avatar" aria-hidden="true">◈</div><div><h2>Opponent</h2><span>Prediction target</span></div><div class="player-life"><strong id="target-life">20</strong><small>LIFE</small></div><span id="target-active" class="turn-badge">ACTIVE TURN</span><span id="hand-status" class="tag">HIDDEN</span></div>
+       <div class="hand-caption"><span>Opponent’s hand</span><span><b id="hand-size"></b> cards · <span id="hand-mode">Hidden from the model</span></span></div>
+       <div id="actual-hand" class="actual-hand board-hand"></div>
+       <div class="zone-with-library"><div class="board-zone lands-zone"><div class="zone-label">LANDS <span id="target-land-count"></span></div><div id="target-lands" class="board-cards"></div></div><div class="library-pile" aria-label="Opponent’s library, count unavailable"><div class="library-back">◈</div><small>LIBRARY</small></div></div>
+       <div class="board-zone creature-zone"><div class="zone-label">CREATURES & OTHER PERMANENTS <span id="target-permanent-count"></span></div><div id="target-permanents" class="board-cards"></div></div>
+      </section>
+      <div class="board-divider"><span></span><div><strong id="board-turn-label">Turn 1</strong><small>END-OF-TURN SNAPSHOT</small></div><span></span></div>
+      <section class="player-half observer-half" aria-label="Observer’s battlefield">
+       <div class="board-zone creature-zone"><div class="zone-label">CREATURES & OTHER PERMANENTS <span id="observer-permanent-count"></span></div><div id="observer-permanents" class="board-cards"></div></div>
+       <div class="zone-with-library"><div class="board-zone lands-zone"><div class="zone-label">LANDS <span id="observer-land-count"></span></div><div id="observer-lands" class="board-cards"></div></div><div class="library-pile" aria-label="Observer’s library, count unavailable"><div class="library-back">◈</div><small>LIBRARY</small></div></div>
+       <div class="observer-footer"><div class="player-heading"><div class="player-avatar observer-avatar" aria-hidden="true">✧</div><div><h2>You / observer</h2><span>Public perspective</span></div><div class="player-life"><strong id="observer-life">20</strong><small>LIFE</small></div><span id="observer-active" class="turn-badge">ACTIVE TURN</span></div><div id="observer-hand" class="observer-hand" aria-label="Observer’s hand, identities unavailable"></div></div>
+      </section>
+     </section>
+     <section class="panel replay-panel" aria-label="Replay controls"><div class="panel-heading"><h2>Replay controls</h2><span id="frame-label" class="muted"></span></div><div id="timeline" class="timeline" aria-label="Choose a half-turn"></div><div class="playback"><button id="prev" class="icon-button" aria-label="Previous half-turn">←</button><button id="play-toggle" class="button" aria-pressed="false">▶ Play replay</button><label class="sr-only" for="frame-slider">Replay half-turn</label><input id="frame-slider" type="range" min="0" value="0"><button id="next" class="icon-button" aria-label="Next half-turn">→</button></div><div id="action-summary" class="action-summary" aria-live="polite"></div></section>
+     <div id="game-result" class="game-result" role="status" hidden></div>
+     <div id="snapshot-score" class="panel-footer board-score"></div>
+     <p class="board-note">Board cards and life totals are public end-of-half-turn snapshots. Cards with a gold glow appeared since the previous snapshot. Tapping, counters, attachments, and exact action order are not available.</p>
+    </div>
+    <aside class="predictions-column" aria-label="Opponent hand predictions">
+     <section class="panel predictions"><div class="panel-heading"><div><div class="eyebrow">OPPONENT’S HIDDEN HAND</div><h2>What are they holding?</h2><p>Chance of holding at least one copy</p></div><div><label class="sr-only" for="top-select">Number of predictions</label><select id="top-select"><option value="10">Top 10</option><option value="5">Top 5</option><option value="20">Top 20</option></select></div></div><div class="prediction-context"><div><strong id="compatible"></strong><small>compatible decks</small></div><div><strong id="departed-count"></strong><small>cards publicly departed</small></div></div><div class="list-head"><span>CARD</span><span>CHANCE IN HAND</span></div><div id="prediction-list"></div><div class="panel-footer">Select a prediction to inspect it. Multiple cards can be held, so probabilities do not sum to 100%.</div></section>
+     <details class="panel explanation" open><summary>Inside this prediction <span>⌄</span></summary><div id="card-detail"></div></details>
+    </aside>
+   </div>
+   <div class="boundary-note"><b>Public actions → hand predictions</b><p>The board is replay context. The current model updates from card movements, hand size, and remaining copies; it does not yet use combat, life totals, mana availability, or passing decisions. Revealing the actual hand only checks predictions.</p></div>
+   <p class="selection-note" id="selection-note"></p>
+  </div>
+ </section>
+ <section id="progress" class="view" hidden>
+  <div class="heading"><div><div class="eyebrow">THE RESEARCH SO FAR</div><h1>From deck guesses to hand predictions.</h1><p>What we have built, what the experiments show, and where the next work belongs.</p></div></div>
+  <div class="milestones"><article><span class="tag green">COMPLETE</span><h2>01 · Deck reconstruction</h2><p>Count cards that appear together in historical decks. Predict likely deck contents from observed cards.</p><small>Useful prior knowledge about plausible decks.</small></article><article><span class="tag green">CURRENT BASELINE</span><h2>02 · Current hand inference</h2><p>Use public card movements and remaining copies to estimate which cards are held right now.</p><small>Early replay snapshots; no strategic behavior model.</small></article><article><span class="tag">NEXT</span><h2>03 · Action likelihoods</h2><p>Learn how passing, mana availability, and other choices depend on the cards in hand.</p><small>Needs more reliable replay and zone reconstruction first.</small></article></div>
+  <section class="panel benchmark"><div class="panel-heading"><div><h2>Do public actions help?</h2><p>Compare hand predictions with and without public card movements.</p></div><div><label class="sr-only" for="experiment-select">Experiment</label><select id="experiment-select"><option value="1">5,000 replay games · no mulligans</option><option value="0">500 replay games · first smoke test</option><option value="2">5,000 replay games · mulligans included</option></select></div></div><div id="experiment-stats" class="experiment-stats"></div><div id="benchmark-chart"></div><div id="benchmark-interpretation" class="benchmark-interpretation"></div></section>
+  <div class="progress-details"><section class="panel"><div class="panel-heading"><h2>How to read the scores</h2></div><div class="prose"><p><b>Recall@20:</b> the fraction of actual hand card types found in the top 20 predictions. Higher is better. It is not the chance that a single prediction is correct.</p><p><b>MRR:</b> how early the first correct card appears in the ranking. Higher is better; common lands make a first hit easier.</p><p><b>Brier score:</b> error in the per-card probabilities, averaged across the card pool. Lower is better. Most card types are absent, so a low score alone does not establish good calibration.</p></div></section><section class="panel"><div class="panel-heading"><h2>What remains uncertain</h2></div><div class="prose"><p>Experiments use a file-prefix sample and early turns. Basic lands are included. Missing movements can stop a game's evaluation.</p><p>The model assumes uniform draws and random card departures. It does not model Arena hand smoothing, library effects, or why a player chose a particular action.</p><p>When enabled, mulligans use a smaller uniform kept-hand approximation. Keep choices and bottoming order are not modeled.</p></div></section></div>
+ </section>
+ <footer><span>Hidden Hand / Research in progress<br>17Lands public data · CC BY 4.0</span><span>Card imagery via <a href="https://scryfall.com" target="_blank" rel="noopener">Scryfall</a><br>Magic: The Gathering © Wizards of the Coast</span></footer>
+</main>
+<dialog id="card-dialog" aria-labelledby="dialog-title">
+ <div class="dialog-heading"><h2 id="dialog-title"></h2><button id="dialog-close" class="icon-button" aria-label="Close card preview">×</button></div>
+ <img id="dialog-image" class="full-card-image" alt="" width="488" height="680">
+ <p id="dialog-credit"></p><a id="dialog-source" target="_blank" rel="noopener">View card on Scryfall ↗</a>
+</dialog>
+<script type="module" src="app.js"></script>
+</body>
+</html>
