@@ -19,6 +19,7 @@ function symbol(card) {
 }
 function activeGame() { return data.cases[state.game]; }
 function render() {
+ hideCardPreview();
  const game=activeGame(), frame=game.frames[state.frame];
  $('#game-meta').textContent=`${game.complete?'Full recorded game':'Early-turn excerpt'} · ${game.on_play?'Opponent plays first':'Opponent draws first'}`;
  $('#frame-label').textContent=`Turn-end state ${state.frame+1} of ${game.frames.length}`;
@@ -35,7 +36,7 @@ function render() {
  $('#frame-slider').max=game.frames.length-1;$('#frame-slider').value=state.frame;
  $('#prev').disabled=state.frame===0;$('#next').disabled=state.frame===game.frames.length-1;
  const step=frame.step;
- $('#action-summary').innerHTML=`<b>${step.active_player==='target'?'Target’s':'Observer’s'} turn ${step.turn}</b>${step.draws?`<span class="draw">+${step.draws} unknown card${step.draws===1?'':'s'} drawn</span>`:''}${step.departed.map(card=>`<span class="action-chip">${escape(card)} left hand</span>`).join('')}${!step.draws&&!step.departed.length?'<span class="draw">No modeled target-hand movement this half-turn</span>':''}`;
+ $('#action-summary').innerHTML=`<b>${step.active_player==='target'?'Target’s':'Observer’s'} turn ${step.turn}</b>${step.draws?`<span class="draw">+${step.draws} unknown card${step.draws===1?'':'s'} drawn</span>`:''}${step.departed.map(card=>`<span class="action-chip" tabindex="0" data-preview-card="${escape(card)}">${escape(card)} left hand</span>`).join('')}${!step.draws&&!step.departed.length?'<span class="draw">No modeled target-hand movement this half-turn</span>':''}`;
  $('#hand-size').textContent=step.hand_size;
  $('#compatible').textContent=frame.compatible_decks.toLocaleString();
  $('#departed-count').textContent=departures(game.frames,state.frame).length;
@@ -48,6 +49,7 @@ function render() {
  const list=$('#prediction-list');list.replaceChildren();
  predictions.forEach(([card,p],i)=>{
   const button=document.createElement('button');button.className=`prediction-row ${state.selected===card?'selected':''}`;
+  button.dataset.previewCard=card;
   button.setAttribute('aria-pressed',String(state.selected===card));
   const delta=predictionDelta(game.frames,state.frame,card);
   const hit=state.reveal?(frame.actual_hand[card]?'<span class="hit">✓ In hand</span>':'<span class="miss">Not held</span>'):'';
@@ -59,6 +61,7 @@ function render() {
   for(const [card,copies] of Object.entries(frame.actual_hand)) {
    const tile=document.createElement('div');tile.className='hand-card illustrated';
    tile.innerHTML=`${images[card]?`<button class="hand-image-button" aria-label="Enlarge ${escape(card)}"><img class="full-card-image" src="${escape(images[card].image)}" alt="${escape(card)}" loading="lazy" width="488" height="680"></button>`:symbol(card)}<span class="card-title">${escape(card)}</span><span class="copies">${copies} cop${copies===1?'y':'ies'} · ${percent(frame.probabilities[card]||0)} predicted</span>`;
+   if(tile.querySelector('.hand-image-button'))tile.querySelector('.hand-image-button').dataset.previewCard=card;
    tile.querySelector('.hand-image-button')?.addEventListener('click',()=>showCard(card));hand.append(tile);
   }
  } else {
@@ -105,7 +108,7 @@ function renderZone(container,cards,previous,animate) {
   const button=document.createElement('button');button.className=`board-card ${isNew?'new-card':''} ${isNew&&animate?'entering-card':''}`;
   button.style.setProperty('--order',index);
   button.setAttribute('aria-label',`${card}${isNew?', appeared this snapshot':''}. Open card preview`);
-  button.title=card;
+  button.dataset.previewCard=card;
   button.innerHTML=images[card]?`<img src="${escape(images[card].image)}" alt="${escape(card)}" loading="lazy" width="488" height="680">`:`<span class="board-card-placeholder">${escape(card)}</span>`;
   if(isNew)button.insertAdjacentHTML('beforeend','<span class="new-card-badge">NEW</span>');
   button.addEventListener('click',()=>showCard(card));container.append(button);
@@ -126,7 +129,7 @@ function renderChanges(game) {
   if(!items.length)continue;
   const heading=document.createElement('h3');heading.className='change-label';heading.textContent=label;container.append(heading);
   for(const item of items){
-   const button=document.createElement('button');button.className=`change-row ${kind}`;
+   const button=document.createElement('button');button.className=`change-row ${kind}`;button.dataset.previewCard=item.card;
    button.setAttribute('aria-label',`${item.card}: ${percent(item.before)} to ${percent(item.after)}. Inspect prediction history`);
    button.innerHTML=`<span>${escape(item.card)}<small>${percent(item.before)} → ${percent(item.after)}</small></span><b>${item.delta>0?'+':''}${(item.delta*100).toFixed(1)} pp</b>`;
    button.addEventListener('click',()=>{state.selected=item.card;render();$('#card-detail').closest('details').open=true;});container.append(button);
@@ -152,17 +155,56 @@ function renderDetail(frame,game) {
  $('#card-detail').innerHTML=`<div class="detail-content"><div class="detail-title">${escape(card)}</div><div class="detail-prob">${percent(p)}</div><p>Chance the target holds <b>at least one copy</b> at this snapshot. It is not a prediction of when they will play it.</p><div class="detail-comparison"><div><small>Hand-size-only baseline</small><b>${percent(baseline)}</b></div><div><small>Change since last snapshot</small><b>${delta===null?'—':`${delta>=0?'+':''}${(delta*100).toFixed(1)} pp`}</b></div></div><p>${seen?`${seen} cop${seen===1?'y has':'ies have'} already left the hand publicly. The model removes those copies; additional copies can still be held.`:'This card has not publicly left the hand yet. Its score comes from the plausible decks and the target’s current hand size.'}</p><p style="margin-top:10px">${frame.compatible_decks.toLocaleString()} historical decks contain enough copies to explain all departures so far. The model weights them by the observed card frequencies, then estimates what remains in hand.</p></div>`;
  $('#card-detail .detail-content').append(renderTrend(game,card));
  if(images[card]) {
-  const button=document.createElement('button');button.className='detail-image-button';button.setAttribute('aria-label',`Enlarge ${card}`);
+  const button=document.createElement('button');button.className='detail-image-button';button.dataset.previewCard=card;button.setAttribute('aria-label',`Enlarge ${card}`);
   button.innerHTML=`<img class="full-card-image" src="${escape(images[card].image)}" alt="${escape(card)}" loading="lazy" width="488" height="680"><span>Click to view full card ↗</span>`;
   button.addEventListener('click',()=>showCard(card));$('#card-detail .detail-content').prepend(button);
  }
 }
 function wireImageFallbacks() {
- for(const img of document.querySelectorAll('img'))img.addEventListener('error',()=>{
+ for(const img of document.querySelectorAll('img:not(#hover-card-image)'))img.addEventListener('error',()=>{
   const fallback=document.createElement('span');fallback.className='image-fallback';fallback.textContent=img.alt;img.replaceWith(fallback);
  },{once:true});
 }
+let previewAnchor=null;
+function hideCardPreview() {
+ previewAnchor=null;
+ const preview=$('#card-hover-preview');if(preview)preview.hidden=true;
+}
+function showCardPreview(anchor) {
+ const card=anchor?.dataset.previewCard, art=images[card];
+ if(!art||$('#card-dialog').open)return;
+ previewAnchor=anchor;
+ const preview=$('#card-hover-preview'), image=$('#hover-card-image');
+ image.src=art.image;image.alt=card;
+ $('#hover-card-name').textContent=card;
+ preview.hidden=false;
+ const rect=anchor.getBoundingClientRect(), gap=16, edge=10;
+ const {width,height}=preview.getBoundingClientRect();
+ const right=rect.right+gap;
+ const left=right+width<=window.innerWidth-edge?right:rect.left-width-gap;
+ preview.style.left=`${Math.max(edge,Math.min(left,window.innerWidth-width-edge))}px`;
+ preview.style.top=`${Math.max(edge,Math.min(rect.top+(rect.height-height)/2,window.innerHeight-height-edge))}px`;
+}
+document.addEventListener('pointerover',event=>{
+ if(event.pointerType==='touch')return;
+ const anchor=event.target.closest('[data-preview-card]');
+ if(anchor&&anchor!==previewAnchor)showCardPreview(anchor);
+});
+document.addEventListener('pointerout',event=>{
+ if(previewAnchor&&previewAnchor.contains(event.target)&&!previewAnchor.contains(event.relatedTarget))hideCardPreview();
+});
+document.addEventListener('focusin',event=>{
+ const anchor=event.target.closest('[data-preview-card]');if(anchor)showCardPreview(anchor);
+});
+document.addEventListener('focusout',hideCardPreview);
+document.addEventListener('keydown',event=>{if(event.key==='Escape')hideCardPreview();});
+window.addEventListener('scroll',hideCardPreview,true);
+window.addEventListener('resize',hideCardPreview);
+window.addEventListener('blur',hideCardPreview);
+document.addEventListener('visibilitychange',hideCardPreview);
+$('#hover-card-image').addEventListener('error',hideCardPreview);
 function showCard(card) {
+ hideCardPreview();
  stopPlayback();
  const image=images[card];if(!image)return;
  const dialog=$('#card-dialog');$('#dialog-title').textContent=card;

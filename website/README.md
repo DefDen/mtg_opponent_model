@@ -90,3 +90,9 @@ The first recorded state has no preceding comparison. These are combined updates
 from public hand movements, not causal attribution to individual actions or a
 learned model of strategic choices. The hosted replay still uses the interpretable
 hand baseline; boosted-tree experiments remain separate.
+
+Hover a battlefield card, prediction, probability-change row, revealed hand card,
+or named departure to see a large card preview. Keyboard focus also opens the
+preview; Escape dismisses it. Previews stay inside the viewport and clear when
+the replay changes or the page scrolls. Hidden card backs never reveal identities.
+Clicking card images still opens the full-size dialog on desktop and touch devices.
