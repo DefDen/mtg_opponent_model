@@ -183,3 +183,53 @@ def test_reject_invalid_mulligan_counts(mulligans):
     row["num_mulligans"] = str(mulligans)
     with pytest.raises(ValueError, match="num_mulligans"):
         extract_public_history(row, NAMES, 1, allow_mulligans=True)
+
+
+def test_opt_in_unidentified_loss_preserves_private_identity_boundary():
+    first = make_row()
+    first['oppo_turn_1_eot_user_cards_in_hand'] = '1|1|1|2|2|2'
+    second = dict(first)
+    second['oppo_turn_1_eot_user_cards_in_hand'] = '1|1|1|1|2|2'
+    a, reason_a = reconstruct_snapshots(first, NAMES, 1, allow_unknown_departures=True)
+    b, reason_b = reconstruct_snapshots(second, NAMES, 1, allow_unknown_departures=True)
+    assert reason_a is reason_b is None
+    assert a[-1].actual_hand != b[-1].actual_hand
+    assert a[-1].public == b[-1].public
+    assert a[-1].public.steps[-1].unknown_departures == 1
+    assert a[-1].public.steps[-1].departed == ()
+    public, reason = extract_public_history(first, NAMES, 1, allow_unknown_departures=True)
+    assert reason is None and public == a[-1].public
+    assert reconstruct_snapshots(first, NAMES, 1)[1] == 'unaccounted_hand_movement'
+
+
+def test_unidentified_loss_never_resolves_missing_private_ids():
+    row = make_row()
+    row['opening_hand'] = '|'.join(['private'] * 7)
+    row['user_turn_1_eot_user_cards_in_hand'] = '|'.join(['private'] * 7)
+    row['oppo_turn_1_eot_user_cards_in_hand'] = '|'.join(['different-private'] * 5)
+    public, reason = extract_public_history(row, {}, 1, allow_unknown_departures=True)
+    assert reason is None
+    assert public.steps[-1].unknown_departures == 2
+
+
+def test_unknown_loss_does_not_hide_replacement_or_gains():
+    row = make_row()
+    # Net loss one, but one new card and two lost cards: not a loss-only event.
+    row['oppo_turn_1_eot_user_cards_in_hand'] = '1|1|1|2|2|3'
+    snapshots, reason = reconstruct_snapshots(row, NAMES, 1, allow_unknown_departures=True)
+    assert reason == 'unaccounted_hand_movement' and len(snapshots) == 1
+    row['oppo_turn_1_eot_user_cards_in_hand'] = '1|1|1|1|2|2|2|3'
+    snapshots, reason = reconstruct_snapshots(row, NAMES, 1, allow_unknown_departures=True)
+    assert reason == 'unaccounted_hand_movement' and len(snapshots) == 1
+    _, public_reason = extract_public_history(row, NAMES, 1, allow_unknown_departures=True)
+    assert public_reason == 'unaccounted_hand_size'
+
+
+def test_known_departure_and_unidentified_loss_are_counted_separately():
+    row = make_row()
+    row['oppo_turn_1_user_instants_sorceries_cast'] = '2'
+    row['oppo_turn_1_eot_user_cards_in_hand'] = '1|1|1|2|2'
+    snapshots, reason = reconstruct_snapshots(row, NAMES, 1, allow_unknown_departures=True)
+    assert reason is None
+    step = snapshots[-1].public.steps[-1]
+    assert step.departed == ('B',) and step.unknown_departures == 1

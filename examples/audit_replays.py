@@ -8,11 +8,12 @@ from pathlib import Path
 from mtg_opponent_model.replays import load_card_names, read_replay_rows, reconstruct_snapshots
 
 
-def audit(rows, names, max_turn, allow_mulligans=False):
+def audit(rows, names, max_turn, allow_mulligans=False, allow_unknown_departures=False):
     stops = Counter()
     stop_locations = Counter()
     mismatches = Counter()
     snapshots_count = games_with_snapshots = 0
+    unidentified_steps = unidentified_cards = recorded_states = completed_games = 0
     examples = []
     seen = set()
     for row in rows:
@@ -22,9 +23,22 @@ def audit(rows, names, max_turn, allow_mulligans=False):
         seen.add(game_id)
         details = {}
         snapshots, reason = reconstruct_snapshots(row, names, max_turn, diagnostics=details,
-                                                 allow_mulligans=allow_mulligans)
+                                                 allow_mulligans=allow_mulligans,
+                                                 allow_unknown_departures=allow_unknown_departures)
         snapshots_count += len(snapshots)
         games_with_snapshots += bool(snapshots)
+        for snapshot in snapshots:
+            unidentified = snapshot.public.steps[-1].unknown_departures
+            unidentified_steps += unidentified > 0
+            unidentified_cards += unidentified
+        sides = ("user", "oppo") if row["on_play"] == "True" else ("oppo", "user")
+        available = [(turn, side) for turn in range(1, 31) for side in sides
+                     if any(float(row.get(f"{side}_turn_{turn}_eot_{p}_life", "0") or 0) != 0
+                            for p in ("user", "oppo"))]
+        recorded_states += sum(turn <= max_turn for turn, _ in available)
+        completed_games += (bool(available) and reason is None
+                            and len(snapshots) == len(available)
+                            and int(row.get("num_turns", available[-1][0])) <= 30)
         if reason is None:
             continue
         stops[reason] += 1
@@ -38,9 +52,15 @@ def audit(rows, names, max_turn, allow_mulligans=False):
             examples.append({"game_id": game_id, "reason": reason,
                              "valid_snapshots_before_stop": len(snapshots), **details})
     return {"max_turn": max_turn, "allow_mulligans": allow_mulligans,
+            "allow_unknown_departures": allow_unknown_departures,
             "unique_games": len(seen),
             "games_with_snapshots": games_with_snapshots,
             "valid_snapshots": snapshots_count,
+            "available_recorded_snapshots_in_window": recorded_states,
+            "recorded_snapshot_coverage": snapshots_count / recorded_states if recorded_states else 0,
+            "games_reaching_recorded_end": completed_games,
+            "snapshots_with_unknown_departures": unidentified_steps,
+            "unknown_departure_cards": unidentified_cards,
             "games_without_reconstruction_stop": len(seen) - sum(stops.values()),
             "stops_by_reason": dict(sorted(stops.items())),
             "stops_by_turn_player_reason": dict(sorted(stop_locations.items())),
@@ -56,6 +76,8 @@ def main():
     parser.add_argument("--turns", type=int, nargs="+", default=[3, 10, 30])
     parser.add_argument("--include-mulligans", action="store_true",
                         help="Report both zero-mulligan and mulligan-inclusive coverage")
+    parser.add_argument("--compare-unknown-departures", action="store_true",
+                        help="Compare strict audits with public-count-only unidentified losses")
     parser.add_argument("--output", type=Path, default=Path("reports/blb_replay_audit.json"))
     args = parser.parse_args()
     if any(turn < 1 or turn > 30 for turn in args.turns):
@@ -77,15 +99,16 @@ def main():
               "limitations": ["File-prefix sample", "Private labels used only for evaluation diagnostics",
                               "Matching hands do not establish casting zone provenance",
                               "No missing movements are inferred from private labels"],
-              "audits": [audit(rows, names, turn, allow_mulligans)
+              "audits": [audit(rows, names, turn, allow_mulligans, allow_unknown)
                          for turn in dict.fromkeys(args.turns)
-                         for allow_mulligans in ([False, True] if args.include_mulligans else [False])]}
+                         for allow_mulligans in ([False, True] if args.include_mulligans else [False])
+                         for allow_unknown in ([False, True] if args.compare_unknown_departures else [False])]}
     args.output.parent.mkdir(parents=True, exist_ok=True)
     args.output.write_text(json.dumps(report, indent=2) + "\n", encoding="utf-8")
     for result in report["audits"]:
         print(json.dumps({key: result[key] for key in (
-            "max_turn", "allow_mulligans", "unique_games", "games_with_snapshots",
-            "valid_snapshots", "games_without_reconstruction_stop", "stops_by_reason")}))
+            "max_turn", "allow_mulligans", "allow_unknown_departures", "unique_games", "games_with_snapshots",
+            "valid_snapshots", "recorded_snapshot_coverage", "games_reaching_recorded_end", "stops_by_reason")}))
     print(f"Evaluation-only stop examples: {args.output}")
 
 

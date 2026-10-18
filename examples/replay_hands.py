@@ -33,6 +33,8 @@ def main() -> None:
     parser.add_argument("--bootstrap-samples", type=int, default=1000)
     parser.add_argument("--include-mulligans", action="store_true",
                         help="Audit smaller kept hands; use a uniform retained-hand approximation")
+    parser.add_argument("--allow-unknown-departures", action="store_true",
+                        help="Marginalize unidentified losses derived from public hand-size counts")
     parser.add_argument("--output", type=Path, default=Path("data/replay_hand_results.json"))
     args = parser.parse_args()
     if args.max_turn < 1 or args.max_turn > 30:
@@ -74,7 +76,8 @@ def main() -> None:
             continue
         seen_games.add(game_key)
         snapshots, reason = reconstruct_snapshots(row, names, args.max_turn,
-                                                 allow_mulligans=args.include_mulligans)
+                                                 allow_mulligans=args.include_mulligans,
+                                                 allow_unknown_departures=args.allow_unknown_departures)
         if reason:
             stops[reason] += 1
         for snapshot in snapshots:
@@ -113,7 +116,8 @@ def main() -> None:
         "settings": {"seed": args.seed, "max_games": args.max_games,
                      "max_deck_rows": args.max_deck_rows, "max_turn": args.max_turn,
                      "basic_lands_included": True,
-                     "zero_mulligans_only": not args.include_mulligans},
+                     "zero_mulligans_only": not args.include_mulligans,
+                     "allow_unknown_departures": args.allow_unknown_departures},
         "replay_rows": len(rows), "replay_events": len(groups),
         "held_out_events": len(test_groups), "held_out_games": len(seen_games),
         "training_decks": len(train),
@@ -124,7 +128,7 @@ def main() -> None:
         "unsupported_prior_snapshots": unsupported, "card_universe_size": len(universe),
         "aggregation": "average snapshots within game, then average games",
         **summary, "examples": examples,
-        "limitations": ["File-prefix sample", "Early half-turn summaries only",
+        "limitations": ["File-prefix sample", "Half-turn summaries only; no within-turn action order",
                         "Labels are audited tracked-player hands, viewed from their opponent's perspective",
                         "Random departures ignore strategic card selection and passes",
                         "Uniform opening hands ignore Arena hand smoothing",
@@ -135,6 +139,9 @@ def main() -> None:
                         "Draw counts and hand sizes are derived from lengths, never private card identities",
                         "No held-out decklists or private hand identities passed to the model",
                         "No-compatible-prior snapshots are excluded and counted"]}
+    if args.allow_unknown_departures:
+        report["limitations"].append(
+            "Unidentified net losses use public counts only and are marginalized as random departures; causes and identities are unknown")
     args.output.parent.mkdir(parents=True, exist_ok=True)
     args.output.write_text(json.dumps(report, indent=2) + "\n", encoding="utf-8")
     print(json.dumps({key: value for key, value in report.items() if key != "examples"}, indent=2))

@@ -43,3 +43,34 @@ def test_brier_and_unknown_targets():
     empty = hand_metrics({"A": 0}, {}, ["A"])
     assert empty["Brier"] == 0
     assert empty["MRR"] == 0
+
+
+def test_unidentified_loss_matches_exhaustive_random_hand_enumeration():
+    from collections import Counter
+    from itertools import permutations
+
+    # Draw a 3-card hand from four physical cards, lose one unknown card,
+    # then observe an A departing. Enumerate all equally likely orders.
+    outcomes = Counter()
+    for order in permutations(('A1', 'A2', 'B1', 'C1')):
+        if order[1].startswith('A'):
+            outcomes[order[2][0]] += 1
+    expected = {card: count / sum(outcomes.values()) for card, count in outcomes.items()}
+    model = HandModel([DeckRecord('d', 'g', {'A': 2, 'B': 1, 'C': 1})])
+    public = PublicHistory(3, (PublicStep(1, 'observer', 0, (), 2, unknown_departures=1),
+                               PublicStep(1, 'target', 0, ('A',), 1)))
+    assert model.predict(public) == pytest.approx(expected)
+
+
+def test_unknown_departure_counts_prevent_drawing_from_an_empty_library():
+    model = HandModel([DeckRecord('d', 'g', {'A': 2})])
+    public = PublicHistory(2, (PublicStep(1, 'observer', 0, (), 1, unknown_departures=1),
+                               PublicStep(1, 'target', 1, (), 2)))
+    with pytest.raises(ValueError, match='compatible'):
+        model.predict(public)
+
+
+@pytest.mark.parametrize('count', [-1, 0.5, True])
+def test_invalid_unknown_departure_count(count):
+    with pytest.raises(ValueError):
+        PublicStep(1, 'observer', 0, (), 1, unknown_departures=count)

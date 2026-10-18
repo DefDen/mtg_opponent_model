@@ -1,7 +1,7 @@
 """17Lands replay labels kept separate from public hand-model inputs."""
 from collections import Counter
 import csv
-from dataclasses import dataclass
+from dataclasses import dataclass, replace
 import gzip
 from pathlib import Path
 from typing import Iterator, Mapping
@@ -33,6 +33,18 @@ def card_list(value: str, names: Mapping[str, str]) -> tuple[str, ...]:
 def _card_count(value: str) -> int:
     """Count opaque IDs without resolving private identities."""
     return sum(bool(card) for card in value.split("|"))
+
+
+def _account_for_loss(step: PublicStep, previous_size: int, enabled: bool) -> PublicStep:
+    """Infer a loss COUNT from public sizes; never assign a cause or identity.
+
+    Net gains and same-size replacements are not repaired. The independent
+    audit must verify that the actual hand only lost cards before accepting.
+    """
+    deficit = previous_size + step.draws - len(step.departed) - step.hand_size
+    if enabled and deficit > 0:
+        return replace(step, unknown_departures=deficit)
+    return step
 
 
 def _validate_start(row: Mapping[str, str], max_turn: int, allow_mulligans: bool) -> str | None:
@@ -85,7 +97,8 @@ def _public_steps(row: Mapping[str, str], names: Mapping[str, str],
 
 def extract_public_history(row: Mapping[str, str], names: Mapping[str, str],
                            max_turn: int = 3, *,
-                           allow_mulligans: bool = False) -> tuple[PublicHistory, str | None]:
+                           allow_mulligans: bool = False,
+                           allow_unknown_departures: bool = False) -> tuple[PublicHistory, str | None]:
     """Extract the longest count-consistent history without reading private identities.
 
     This is a public-input adapter, not an audited evaluation label. Cast source
@@ -100,7 +113,8 @@ def extract_public_history(row: Mapping[str, str], names: Mapping[str, str],
     size = history.opening_hand_size
     try:
         for _, step in _public_steps(row, names, max_turn):
-            if size + step.draws - len(step.departed) != step.hand_size:
+            step = _account_for_loss(step, size, allow_unknown_departures)
+            if size + step.draws - len(step.departed) - step.unknown_departures != step.hand_size:
                 return PublicHistory(history.opening_hand_size, tuple(steps)), "unaccounted_hand_size"
             steps.append(step)
             size = step.hand_size
@@ -112,6 +126,7 @@ def extract_public_history(row: Mapping[str, str], names: Mapping[str, str],
 def reconstruct_snapshots(row: Mapping[str, str], names: Mapping[str, str],
                           max_turn: int = 3, *,
                           allow_mulligans: bool = False,
+                          allow_unknown_departures: bool = False,
                           diagnostics: dict | None = None) -> tuple[list[HandSnapshot], str | None]:
     """Independently audit public steps against private hand identities.
 
@@ -120,6 +135,10 @@ def reconstruct_snapshots(row: Mapping[str, str], names: Mapping[str, str],
     Consistent accounting does not establish casting zone provenance.
     Opt-in mulligan support audits the kept hand of size 7 - num_mulligans;
     keep decisions and library-bottom order are not represented in the model.
+    Opt-in unidentified departures expose only counts obtained independently
+    from public hand sizes. Actual hands must be subsets of the accounted
+    hand with exactly that many cards removed. No missing draw, return, or
+    lost-card identity is copied from private labels into model inputs.
     """
     if diagnostics is not None:
         diagnostics.clear()
@@ -133,6 +152,7 @@ def reconstruct_snapshots(row: Mapping[str, str], names: Mapping[str, str],
     game_id = ":".join(row[k] for k in ("draft_id", "match_number", "game_number"))
     try:
         for prefix, step in _public_steps(row, names, max_turn):
+            step = _account_for_loss(step, sum(hand.values()), allow_unknown_departures)
             if diagnostics is not None:
                 diagnostics.clear()
                 diagnostics.update(turn=step.turn, active_player=step.active_player)
@@ -148,7 +168,9 @@ def reconstruct_snapshots(row: Mapping[str, str], names: Mapping[str, str],
                     return snapshots, "departure_not_in_hand"
             next_hand = +next_hand
             actual = Counter(card_list(row[prefix + "eot_user_cards_in_hand"], names))
-            if next_hand != actual:
+            added = actual - next_hand
+            missing = next_hand - actual
+            if added or sum(missing.values()) != step.unknown_departures:
                 if diagnostics is not None:
                     diagnostics.update(
                         added_cards_evaluation_only=dict(actual - next_hand),

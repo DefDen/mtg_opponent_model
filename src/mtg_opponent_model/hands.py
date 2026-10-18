@@ -15,10 +15,12 @@ class PublicStep:
     draws: int
     departed: tuple[str, ...]  # target lands, casts, and public discards
     hand_size: int
+    unknown_departures: int = 0  # Public count; omitted identities stay latent.
 
     def __post_init__(self) -> None:
         if (self.turn < 1 or self.active_player not in {"target", "observer"}
-                or self.draws < 0 or self.hand_size < 0):
+                or self.draws < 0 or self.hand_size < 0
+                or type(self.unknown_departures) is not int or self.unknown_departures < 0):
             raise ValueError("Invalid public step")
 
 
@@ -44,6 +46,11 @@ class HandModel:
     Tutors, returns, and casting from other zones are unsupported. A smaller
     opening size can approximate a kept mulligan hand, but keep decisions and
     London-mulligan bottoming order are not modeled.
+
+    Unidentified departures are marginalized under the same random-selection
+    assumption. Their cards remain in the latent pool, not necessarily in the
+    library; the current hand is a uniform subset of that pool. Their counts
+    still reduce the number of cards available for subsequent draws.
     """
 
     def __init__(self, decks: Iterable[DeckRecord]) -> None:
@@ -62,12 +69,14 @@ class HandModel:
             raise ValueError("Opening hand size must be nonnegative")
         departed: list[str] = []
         required_deck_size = size
+        unidentified = 0
         for step in history.steps:
-            if size + step.draws - len(step.departed) != step.hand_size:
+            if size + step.draws - len(step.departed) - step.unknown_departures != step.hand_size:
                 raise ValueError("Hand size does not match public card movements")
             required_deck_size = max(required_deck_size,
-                                     len(departed) + size + step.draws)
+                                     len(departed) + unidentified + size + step.draws)
             departed.extend(step.departed)
+            unidentified += step.unknown_departures
             size = step.hand_size
         posterior: list[tuple[dict[str, int], float]] = []
         for original in self.decks:
