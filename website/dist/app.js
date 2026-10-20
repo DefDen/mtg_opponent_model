@@ -1,3 +1,4 @@
+import {parseCsv} from './replay-inference.js';
 import { percent, ranked, recallAt, departures, predictionDelta, colorClass, cardKind, boardEntries, predictionChanges, predictionHistory, opponentComparison, gameForMethod } from './model-view.js';
 const $ = selector => document.querySelector(selector);
 const escape = value => String(value).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
@@ -21,7 +22,8 @@ function activeGame() { return gameForMethod(data.cases[state.game],state.method
 function render() {
  hideCardPreview();
  const game=activeGame(), frame=game.frames[state.frame];
- $('#game-meta').textContent=`${game.complete?'Full recorded game':'Early-turn excerpt'} · ${game.on_play?'Opponent plays first':'Opponent draws first'}`;
+ $('#replay-origin').textContent=game.imported?'IMPORTED PUBLIC REPLAY':'REAL HELD-OUT GAME';
+ $('#game-meta').textContent=`${game.imported?'Supported public prefix':game.complete?'Full recorded game':'Early-turn excerpt'} · ${game.on_play?'Opponent plays first':'Opponent draws first'}`;
  $('#frame-label').textContent=`Turn-end state ${state.frame+1} of ${game.frames.length}`;
  const timeline=$('#timeline'); timeline.replaceChildren();
  game.frames.forEach((f,i)=>{
@@ -39,15 +41,18 @@ function render() {
  $('#action-summary').innerHTML=`<b>${step.active_player==='target'?'Target’s':'Observer’s'} turn ${step.turn}</b>${step.draws?`<span class="draw">+${step.draws} unknown card${step.draws===1?'':'s'} drawn</span>`:''}${step.departed.map(card=>`<span class="action-chip" tabindex="0" data-preview-card="${escape(card)}">${escape(card)} left hand</span>`).join('')}${!step.draws&&!step.departed.length?'<span class="draw">No modeled target-hand movement this half-turn</span>':''}`;
  $('#hand-size').textContent=step.hand_size;
  $('#compatible').textContent=state.method==='historical'?frame.compatible_decks.toLocaleString():'—';
- $('#method-note').textContent=data.methods[state.method].description;
+ $('#method-note').textContent=frame.prediction_error||data.methods[state.method].description;
  $('#departed-count').textContent=departures(game.frames,state.frame).length;
+ $('#reveal').disabled=frame.labels_available===false;
+ if(frame.labels_available===false)state.reveal=false;
  $('#reveal').textContent=state.reveal?'Hide opponent’s hand':'Reveal opponent’s hand';
  $('#reveal').setAttribute('aria-pressed',String(state.reveal));
  $('#hand-status').textContent=state.reveal?'REVEALED':'HIDDEN';
- $('#hand-mode').textContent=state.reveal?'Evaluation labels · hidden from the model':'Identities hidden';
+ $('#hand-mode').textContent=frame.labels_available===false?'No private labels provided':state.reveal?'Evaluation labels · hidden from the model':'Identities hidden';
  const predictions=ranked(frame.probabilities,state.limit);
  if(!state.selected) state.selected=predictions[0]?.[0];
  const list=$('#prediction-list');list.replaceChildren();
+ if(frame.prediction_error){const note=document.createElement('p');note.className='change-empty';note.textContent=frame.prediction_error+' Choose a smoothed or tree method.';list.append(note);}
  predictions.forEach(([card,p],i)=>{
   const button=document.createElement('button');button.className=`prediction-row ${state.selected===card?'selected':''}`;
   button.dataset.previewCard=card;
@@ -71,13 +76,13 @@ function render() {
   }
  }
  if(!step.hand_size)hand.innerHTML='<p class="empty-hand">The target’s hand is empty.</p>';
- $('#snapshot-score').textContent=state.reveal?`This snapshot: ${percent(recallAt(frame.probabilities,frame.actual_hand,state.limit))} of actual card types recovered in the top ${state.limit}.`:'Reveal the labels to check which guesses were right. They were never used to make these predictions.';
+ $('#snapshot-score').textContent=frame.labels_available===false?'Imported public replay: actual hand labels are unavailable. Predictions have not been audited against private identities.':state.reveal?`This snapshot: ${percent(recallAt(frame.probabilities,frame.actual_hand,state.limit))} of actual card types recovered in the top ${state.limit}.`:'Reveal the labels to check which guesses were right. They were never used to make these predictions.';
  renderBoard(frame,game);
  renderMethods(frame);
  renderChanges(game);
  renderDetail(frame,game);
  wireImageFallbacks();
- $('#selection-note').textContent=`${game.complete?`${game.selection}. Every one of its ${game.recorded_snapshot_count} available turn-end states passed the hand audit and prior support checks; this is a selected demonstration, not a new benchmark.`:data.selection+'.'} ${data.methods[state.method].label}: ${data.methods[state.method].description} ${data.method_comparison_note} ${game.stop_reason?'This excerpt stops when movement accounting becomes unsupported.':''}`;
+ $('#selection-note').textContent=game.imported?`${game.coverage_note} ${game.stop_reason||'All supplied states processed; this does not establish complete game coverage.'} Imported games are not held-out benchmark examples.`:`${game.complete?`${game.selection}. Every one of its ${game.recorded_snapshot_count} available turn-end states passed the hand audit and prior support checks; this is a selected demonstration, not a new benchmark.`:data.selection+'.'} ${data.methods[state.method].label}: ${data.methods[state.method].description} ${data.method_comparison_note} ${game.stop_reason?'This excerpt stops when movement accounting becomes unsupported.':''}`;
  const ending=$('#game-result');ending.hidden=!(game.complete&&state.frame===game.frames.length-1);
  if(!ending.hidden)ending.textContent=`End of recorded game · ${game.recorded_winner==='target'?'Opponent':'You / observer'} won. The dataset records the result but not the ending action. This is the last available board state; a concession or other ending may not appear on it.`;
 }
@@ -123,7 +128,8 @@ function renderMethods(frame) {
   const heading=document.createElement('button');heading.className='method-choice';heading.textContent=info.label;
   heading.setAttribute('aria-pressed',String(method===state.method));
   heading.addEventListener('click',()=>{stopPlayback();state.method=method;$('#method-select').value=method;render();});section.append(heading);
-  for(const [card,p] of ranked(frame.methods[method],3)){
+  if(frame.method_errors?.[method]){const note=document.createElement('p');note.className='change-empty';note.textContent=frame.method_errors[method];section.append(note);}
+  for(const [card,p] of ranked(frame.methods[method]||{},3)){
    const button=document.createElement('button');button.className='method-guess';button.dataset.previewCard=card;
    button.innerHTML=`<span>${escape(card)}</span><b>${percent(p)}</b>`;
    button.addEventListener('click',()=>{stopPlayback();state.method=method;state.selected=card;$('#method-select').value=method;render();});section.append(button);
@@ -134,6 +140,7 @@ function renderMethods(frame) {
 function renderChanges(game) {
  const changes=predictionChanges(game.frames,state.frame), container=$('#prediction-changes');
  container.replaceChildren();
+ if(!changes&&game.frames[state.frame].prediction_error){container.textContent='Selected method is unavailable at this state.';return;}
  if(!changes){container.innerHTML='<p class="change-empty">Changes appear after two recorded opponent turns and stay visible during your turn.</p>';return;}
  const comparison=opponentComparison(game.frames,state.frame);
  const previous=game.frames[comparison.previous], current=game.frames[comparison.current];
@@ -157,9 +164,9 @@ function renderChanges(game) {
 function renderTrend(game,card) {
  const points=predictionHistory(game.frames,state.frame,card);
  const container=document.createElement('div');container.className='prediction-trend';
- const coordinates=points.map((p,i)=>`${10+i*280/Math.max(1,points.length-1)},${100-p.probability*90}`);
- const description=points.map(p=>`State ${p.index+1}, ${p.player==='target'?'opponent':'observer'} turn ${p.turn}: ${percent(p.probability)}`).join('; ');
- container.innerHTML=`<h3>Probability over the replay so far</h3><svg viewBox="0 0 300 120" role="img" aria-label="${escape(card)} prediction history"><title>${escape(description)}</title><path d="M10 10 V100 H290" fill="none" stroke="currentColor" opacity=".25"/><text x="12" y="20">100%</text><text x="12" y="116">0%</text><polyline points="${coordinates.join(' ')}" fill="none" stroke="#d5b777" stroke-width="2.5"/>${coordinates.map(point=>{const [x,y]=point.split(',');return `<circle cx="${x}" cy="${y}" r="3" fill="#d5b777"/>`;}).join('')}</svg><small>State 1 → ${points.length} · Current: ${percent(points.at(-1).probability)}. Future states are hidden.</small>`;
+ const coordinates=points.flatMap((p,i)=>p.probability===null?[]:[`${10+i*280/Math.max(1,points.length-1)},${100-p.probability*90}`]);
+ const description=points.map(p=>`State ${p.index+1}, ${p.player==='target'?'opponent':'observer'} turn ${p.turn}: ${p.probability===null?'Unavailable':percent(p.probability)}`).join('; ');
+ container.innerHTML=`<h3>Probability over the replay so far</h3><svg viewBox="0 0 300 120" role="img" aria-label="${escape(card)} prediction history"><title>${escape(description)}</title><path d="M10 10 V100 H290" fill="none" stroke="currentColor" opacity=".25"/><text x="12" y="20">100%</text><text x="12" y="116">0%</text><polyline points="${coordinates.join(' ')}" fill="none" stroke="#d5b777" stroke-width="2.5"/>${coordinates.map(point=>{const [x,y]=point.split(',');return `<circle cx="${x}" cy="${y}" r="3" fill="#d5b777"/>`;}).join('')}</svg><small>State 1 → ${points.length} · Current: ${points.at(-1).probability===null?'Unavailable':percent(points.at(-1).probability)}. Future states are hidden.</small>`;
  const details=document.createElement('details');const summary=document.createElement('summary');summary.textContent='Read values';details.append(summary);
  const values=document.createElement('p');values.textContent=description;details.append(values);container.append(details);
  return container;
@@ -170,11 +177,11 @@ function renderDetail(frame,game) {
  const p=frame.probabilities[card]||0, baseline=frame.baseline[card]||0;
  const seen=departures(game.frames,state.frame).filter(c=>c===card).length;
  const delta=predictionDelta(game.frames,state.frame,card);
- $('#card-detail').innerHTML=`<div class="detail-content"><div class="detail-title">${escape(card)}</div><div class="detail-prob">${percent(p)}</div><p>Chance the target holds <b>at least one copy</b> at this snapshot. It is not a prediction of when they will play it.</p><div class="detail-comparison"><div><small>Hand-size-only baseline</small><b>${percent(baseline)}</b></div><div><small>Change vs previous opponent turn</small><b>${delta===null?'—':`${delta>=0?'+':''}${(delta*100).toFixed(1)} pp`}</b></div></div><p>${escape(data.methods[state.method].description)}</p><p>${seen} copies of this card have publicly left hand. The detailed method descriptions above explain how each model uses this evidence.</p></div>`;
+ $('#card-detail').innerHTML=`<div class="detail-content"><div class="detail-title">${escape(card)}</div><div class="detail-prob">${frame.prediction_error?'Unavailable':percent(p)}</div><p>Chance the target holds <b>at least one copy</b> at this snapshot. It is not a prediction of when they will play it.</p><div class="detail-comparison"><div><small>Hand-size-only baseline</small><b>${percent(baseline)}</b></div><div><small>Change vs previous opponent turn</small><b>${delta===null?'—':`${delta>=0?'+':''}${(delta*100).toFixed(1)} pp`}</b></div></div><p>${escape(data.methods[state.method].description)}</p><p>${seen} copies of this card have publicly left hand. The detailed method descriptions above explain how each model uses this evidence.</p></div>`;
  const comparison=document.createElement('div');comparison.className='card-method-comparison';
  const heading=document.createElement('h3');heading.textContent='This card across methods';comparison.append(heading);
  for(const [method,info] of Object.entries(data.methods)){
-  const row=document.createElement('p');row.textContent=`${info.label}: ${percent(frame.methods[method][card]||0)}`;comparison.append(row);
+  const row=document.createElement('p');row.textContent=`${info.label}: ${(frame.methods[method]===null?'Unavailable':percent(frame.methods[method][card]||0))}`;comparison.append(row);
  }
  $('#card-detail .detail-content').append(comparison);
  $('#card-detail .detail-content').append(renderTrend(game,card));
@@ -254,6 +261,57 @@ function showView(view) {
 for(const button of document.querySelectorAll('[data-view]'))button.addEventListener('click',()=>{location.hash=button.dataset.view;});
 window.addEventListener('hashchange',()=>showView(location.hash.slice(1)));
 showView(location.hash.slice(1));
+let importWorker=null, importRows=null, importPayload=null, importSequence=0;
+function setupReplayImport(){
+ const status=$('#import-status'), button=$('#run-import');
+ function finish(){button.disabled=false;$('#cancel-import').hidden=true;importWorker?.terminate();importWorker=null;}
+ $('#replay-file').addEventListener('change',async event=>{
+  importWorker?.terminate();importWorker=null;$('#cancel-import').hidden=true;
+  button.disabled=true;importRows=null;importPayload=null;$('#csv-game-label').hidden=true;
+  const sequence=++importSequence;
+  const file=event.target.files[0];if(!file)return;
+  try{
+   if(file.size>8*1024*1024)throw Error('File exceeds 8 MB. Export a smaller plain CSV or JSON replay.');
+   const text=await file.text();if(sequence!==importSequence)return;
+   if(file.name.toLowerCase().endsWith('.csv')){
+    importRows=parseCsv(text);if(importRows.length>1000)throw Error('Choose a CSV containing at most 1,000 game rows.');
+    const picker=$('#csv-game');picker.replaceChildren();
+    importRows.forEach((row,i)=>{const option=document.createElement('option');option.value=i;option.textContent=`${row.draft_id||'Game'} · match ${row.match_number||'?'} · game ${row.game_number||'?'}`;picker.append(option);});
+    $('#csv-game-label').hidden=false;status.textContent=`${importRows.length} game rows found. Choose one, then run predictions.`;
+   }else if(file.name.toLowerCase().endsWith('.json')){
+    importPayload=JSON.parse(text);status.textContent='Public replay JSON loaded. Ready to run predictions.';
+   }else throw Error('Choose a plain .csv or public replay .json file. Replay URLs and Arena log files are not supported yet.');
+   button.disabled=false;
+  }catch(error){status.textContent=error.message;}
+ });
+ button.addEventListener('click',()=>{
+  if(!importRows&&!importPayload)return;
+  stopPlayback();hideCardPreview();button.disabled=true;$('#cancel-import').hidden=false;
+  status.textContent='Loading saved models and running predictions locally in your browser…';
+  try{
+   importWorker=new Worker('replay-worker.js',{type:'module'});
+   importWorker.onmessage=event=>{
+    const result=event.data;
+    if(result.type==='progress'){status.textContent=`Scored ${result.done} of ${result.total} supplied states…`;return;}
+    if(result.type==='error'){status.textContent=result.message;finish();return;}
+    if(result.type==='result'){
+     const old=data.cases.findIndex(g=>g.imported);
+     if(old>=0)data.cases[old]=result.game;else data.cases.push(result.game);
+     const index=old>=0?old:data.cases.length-1,picker=$('#game-select');
+     if(old<0){const option=document.createElement('option');option.value=index;picker.append(option);}
+     picker.options[index].textContent=`Imported replay · ${result.game.frames.length} states`;
+     state.game=index;state.frame=0;state.reveal=false;state.selected=null;state.method='smoothed_prior';
+     picker.value=index;$('#method-select').value=state.method;
+     status.textContent=`Loaded ${result.game.frames.length} states. ${result.game.stop_reason||'All supplied states processed.'} Public inputs only; actual hand labels are unavailable.`;
+     finish();render();
+    }
+   };
+   importWorker.onerror=()=>{status.textContent='Replay processing failed. Check your file and try again.';finish();};
+   importWorker.postMessage(importRows?{row:importRows[Number($('#csv-game').value)]}:{payload:importPayload});
+  }catch(error){status.textContent=error.message;finish();}
+ });
+ $('#cancel-import').addEventListener('click',()=>{finish();status.textContent='Import cancelled. Your previous replay is unchanged.';});
+}
 async function init(){
  try {
   const [response,imageResponse]=await Promise.all([fetch('data.json'),fetch('card-images.json')]);
@@ -284,6 +342,7 @@ async function init(){
   if(event.key==='ArrowLeft'){event.preventDefault();chooseFrame(Math.max(0,state.frame-1));}
  });
  document.addEventListener('visibilitychange',()=>{if(document.hidden)stopPlayback();});
+  setupReplayImport();
   render();renderBenchmark();$('#loading').hidden=true;$('#explorer-content').hidden=false;
  } catch(error) { $('#loading').textContent='The replay data could not be loaded. Please refresh the page.';console.error(error); }
 }

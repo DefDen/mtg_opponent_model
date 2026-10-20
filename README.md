@@ -256,3 +256,11 @@ observed Recall@20 rises from 49.8% with the flexible prior to about 53.7–53.8
 with trees on the same 800 test states. Additional board features did not show
 a clear gain over history features in this run. These remain research models;
 the website's saved examples use the previous baseline.
+
+
+The website also supports **new BLB replay imports** without republishing:
+expand “Import a replay,” upload a supported wide 17Lands CSV or public-actions
+JSON, and run all five fitted methods locally in the browser. See
+[the website import documentation](website/README.md#importing-a-new-replay) for
+formats, model export commands, and reconstruction limits. Replay URLs/codes and
+other sets are not yet supported. Imported games are not benchmark examples.

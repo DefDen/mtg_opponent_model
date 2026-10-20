@@ -1,7 +1,7 @@
 # Hidden Hand research explorer
 
-A buildless static website showing real held-out replay predictions. No live
-inference runs in the browser. The export contains one full recorded game
+A buildless static website showing saved held-out replay predictions, with
+on-demand browser inference for uploaded supported replays. The export contains one full recorded game
 (17 half-turn states through turn 9) and eight early-game excerpts (48 states)
 from the 5,000-row no-mulligan experiment, plus the aggregate reports for all
 three existing hand experiments.
@@ -18,9 +18,8 @@ Research progress retains the experiment comparisons and model limitations.
 Board state comes from public end-of-half-turn replay fields, not cumulative
 played-card guesses or private labels. Tapping, counters, attachments, and
 within-turn event order are unavailable. Animations illustrate transitions
-between snapshots; they do not reconstruct exact action order. Battlefield
-context is displayed only: the model's saved predictions are unchanged and do
-not condition on these board fields.
+between snapshots; they do not reconstruct exact action order. The historical baseline uses board state as context; the board-tree model
+also conditions on public board features.
 
 From the research repository, regenerate saved predictions:
 
@@ -105,3 +104,53 @@ that every displayed draft belongs to the saved research test split. Inference
 accepts only public history and public board fields. Trained artifacts stay local;
 the site receives precomputed probabilities. Different training pools and model
 assumptions make this a demonstration, not a replacement for the paired benchmark.
+
+## Importing a new replay
+
+On the hosted site, expand **Import a replay**, upload a plain wide 17Lands replay
+CSV or public-actions JSON, choose a CSV game when needed, then click **Run
+predictions**. This scores a new replay in a module Web Worker using the existing
+fitted models. It requires no inference server or republishing. Inputs remain in
+browser memory and are not uploaded or saved. Reloading clears the imported game.
+The roughly 3.2 MB model table loads only when inference is requested. Cancellation
+terminates the worker. Imports do not train or update model parameters.
+
+The trained pool is **BLB**, with Special Guests present in the original dataset.
+Other sets, Arena logs, 17Lands replay URLs/codes, compressed CSV uploads, and
+long-form (one turn per row) CSV are not supported. CSV is the existing wide
+`user_turn_N_...` schema, one game per row, with `expansion=BLB`. Limit: 8 MB and
+1,000 rows per file; select one game. JSON uses schema version 1; download
+`public-replay-example.json` for a valid example containing only public fields.
+Up to 60 consecutive half-turn states through turn 30 are accepted.
+
+The CSV `user` is the modeled target (labeled Opponent on the board), which may be
+the uploader's own recorded perspective. Private opening, draw, and hand lists
+supply only their **lengths**; identities and recorded decks never enter inference.
+JSON requires explicit hand sizes and anonymous draw counts. Board life, land,
+creature, and other-permanent lists must be supplied; absent zones are empty in
+the CSV schema. Hand labels are unavailable for imports, so Reveal is disabled.
+
+CSV imports stop before tutors and inconsistent hand movements. They do not infer
+unidentified departures. JSON may provide explicit unknown-departure counts.
+These are count-consistent public histories, not independently identity-audited
+games; source zones, returns, generated cards, and same-size substitutions may
+remain unresolved. A processed prefix is never labeled a complete game. Unknown
+out-of-pool departures are rejected. An unsupported historical prior is shown as
+Unavailable, while smoothed and tree methods can continue. Imported games may
+belong to training events and are never included in benchmark reports.
+
+Browser inference exports the original historical deck prior, smoothed mixture
+parameters, card metadata/ID mapping, and fitted raw tree nodes. Refresh with:
+
+```bash
+.venv/bin/python website/scripts/export_browser_models.py
+.venv/bin/python website/scripts/fetch_card_art.py --all-pool
+node --test website/tests/*.test.js
+```
+
+Tests compare all five JavaScript methods against the saved Python predictions
+on every displayed state within 1e-9. Tree export uses scikit-learn internals, so
+regenerate and rerun parity checks after changing the trained artifact or library
+version. Card art for the trained pool and BLB tokens is bundled ahead of time;
+unrecognized board tokens fall back to names. New inference tables contain
+historical training decks, not the uploaded target's decklist.

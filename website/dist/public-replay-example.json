@@ -1,0 +1,727 @@
+{
+  "schema_version": 1,
+  "expansion": "BLB",
+  "opening_hand_size": 7,
+  "on_play": true,
+  "frames": [
+    {
+      "step": {
+        "turn": 1,
+        "active_player": "target",
+        "draws": 0,
+        "departed": [
+          "Mountain",
+          "Blacksmith's Talent"
+        ],
+        "hand_size": 5
+      },
+      "board": {
+        "target": {
+          "lands": [
+            "Mountain"
+          ],
+          "creatures": [],
+          "other": [
+            "Blacksmith's Talent",
+            "Sword"
+          ],
+          "life": 20.0
+        },
+        "observer": {
+          "lands": [],
+          "creatures": [],
+          "other": [],
+          "life": 20.0,
+          "hand_size": 7
+        }
+      }
+    },
+    {
+      "step": {
+        "turn": 1,
+        "active_player": "observer",
+        "draws": 0,
+        "departed": [],
+        "hand_size": 5
+      },
+      "board": {
+        "target": {
+          "lands": [
+            "Mountain"
+          ],
+          "creatures": [],
+          "other": [
+            "Blacksmith's Talent",
+            "Sword"
+          ],
+          "life": 20.0
+        },
+        "observer": {
+          "lands": [
+            "Uncharted Haven"
+          ],
+          "creatures": [],
+          "other": [],
+          "life": 20.0,
+          "hand_size": 7
+        }
+      }
+    },
+    {
+      "step": {
+        "turn": 2,
+        "active_player": "target",
+        "draws": 1,
+        "departed": [
+          "Mountain"
+        ],
+        "hand_size": 5
+      },
+      "board": {
+        "target": {
+          "lands": [
+            "Mountain",
+            "Mountain"
+          ],
+          "creatures": [],
+          "other": [
+            "Blacksmith's Talent",
+            "Sword"
+          ],
+          "life": 20.0
+        },
+        "observer": {
+          "lands": [
+            "Uncharted Haven"
+          ],
+          "creatures": [],
+          "other": [],
+          "life": 20.0,
+          "hand_size": 7
+        }
+      }
+    },
+    {
+      "step": {
+        "turn": 2,
+        "active_player": "observer",
+        "draws": 0,
+        "departed": [],
+        "hand_size": 5
+      },
+      "board": {
+        "target": {
+          "lands": [
+            "Mountain",
+            "Mountain"
+          ],
+          "creatures": [],
+          "other": [
+            "Blacksmith's Talent",
+            "Sword"
+          ],
+          "life": 20.0
+        },
+        "observer": {
+          "lands": [
+            "Forest",
+            "Uncharted Haven"
+          ],
+          "creatures": [],
+          "other": [
+            "Innkeeper's Talent"
+          ],
+          "life": 20.0,
+          "hand_size": 6
+        }
+      }
+    },
+    {
+      "step": {
+        "turn": 3,
+        "active_player": "target",
+        "draws": 1,
+        "departed": [
+          "Mountain"
+        ],
+        "hand_size": 5
+      },
+      "board": {
+        "target": {
+          "lands": [
+            "Mountain",
+            "Mountain",
+            "Mountain"
+          ],
+          "creatures": [],
+          "other": [
+            "Blacksmith's Talent",
+            "Sword"
+          ],
+          "life": 20.0
+        },
+        "observer": {
+          "lands": [
+            "Forest",
+            "Uncharted Haven"
+          ],
+          "creatures": [],
+          "other": [
+            "Innkeeper's Talent"
+          ],
+          "life": 20.0,
+          "hand_size": 6
+        }
+      }
+    },
+    {
+      "step": {
+        "turn": 3,
+        "active_player": "observer",
+        "draws": 0,
+        "departed": [],
+        "hand_size": 5
+      },
+      "board": {
+        "target": {
+          "lands": [
+            "Mountain",
+            "Mountain",
+            "Mountain"
+          ],
+          "creatures": [],
+          "other": [
+            "Blacksmith's Talent",
+            "Sword"
+          ],
+          "life": 20.0
+        },
+        "observer": {
+          "lands": [
+            "Forest",
+            "Forest",
+            "Uncharted Haven"
+          ],
+          "creatures": [],
+          "other": [
+            "Innkeeper's Talent"
+          ],
+          "life": 20.0,
+          "hand_size": 6
+        }
+      }
+    },
+    {
+      "step": {
+        "turn": 4,
+        "active_player": "target",
+        "draws": 1,
+        "departed": [],
+        "hand_size": 6
+      },
+      "board": {
+        "target": {
+          "lands": [
+            "Mountain",
+            "Mountain",
+            "Mountain"
+          ],
+          "creatures": [],
+          "other": [
+            "Blacksmith's Talent",
+            "Sword"
+          ],
+          "life": 20.0
+        },
+        "observer": {
+          "lands": [
+            "Forest",
+            "Forest",
+            "Uncharted Haven"
+          ],
+          "creatures": [],
+          "other": [
+            "Innkeeper's Talent"
+          ],
+          "life": 20.0,
+          "hand_size": 6
+        }
+      }
+    },
+    {
+      "step": {
+        "turn": 4,
+        "active_player": "observer",
+        "draws": 0,
+        "departed": [],
+        "hand_size": 6
+      },
+      "board": {
+        "target": {
+          "lands": [
+            "Mountain",
+            "Mountain",
+            "Mountain"
+          ],
+          "creatures": [],
+          "other": [
+            "Blacksmith's Talent",
+            "Sword"
+          ],
+          "life": 20.0
+        },
+        "observer": {
+          "lands": [
+            "Plains",
+            "Forest",
+            "Forest",
+            "Uncharted Haven"
+          ],
+          "creatures": [],
+          "other": [
+            "Innkeeper's Talent"
+          ],
+          "life": 20.0,
+          "hand_size": 6
+        }
+      }
+    },
+    {
+      "step": {
+        "turn": 5,
+        "active_player": "target",
+        "draws": 1,
+        "departed": [
+          "Mountain"
+        ],
+        "hand_size": 6
+      },
+      "board": {
+        "target": {
+          "lands": [
+            "Mountain",
+            "Mountain",
+            "Mountain",
+            "Mountain"
+          ],
+          "creatures": [],
+          "other": [
+            "Blacksmith's Talent",
+            "Sword"
+          ],
+          "life": 20.0
+        },
+        "observer": {
+          "lands": [
+            "Plains",
+            "Forest",
+            "Forest",
+            "Uncharted Haven"
+          ],
+          "creatures": [],
+          "other": [
+            "Innkeeper's Talent"
+          ],
+          "life": 20.0,
+          "hand_size": 6
+        }
+      }
+    },
+    {
+      "step": {
+        "turn": 5,
+        "active_player": "observer",
+        "draws": 0,
+        "departed": [],
+        "hand_size": 6
+      },
+      "board": {
+        "target": {
+          "lands": [
+            "Mountain",
+            "Mountain",
+            "Mountain",
+            "Mountain"
+          ],
+          "creatures": [],
+          "other": [
+            "Blacksmith's Talent",
+            "Sword"
+          ],
+          "life": 20.0
+        },
+        "observer": {
+          "lands": [
+            "Forest",
+            "Plains",
+            "Forest",
+            "Forest",
+            "Uncharted Haven"
+          ],
+          "creatures": [
+            "Intrepid Rabbit",
+            "Intrepid Rabbit"
+          ],
+          "other": [
+            "Innkeeper's Talent"
+          ],
+          "life": 20.0,
+          "hand_size": 5
+        }
+      }
+    },
+    {
+      "step": {
+        "turn": 6,
+        "active_player": "target",
+        "draws": 1,
+        "departed": [
+          "Mountain",
+          "Quaketusk Boar"
+        ],
+        "hand_size": 5
+      },
+      "board": {
+        "target": {
+          "lands": [
+            "Mountain",
+            "Mountain",
+            "Mountain",
+            "Mountain",
+            "Mountain"
+          ],
+          "creatures": [
+            "Quaketusk Boar"
+          ],
+          "other": [
+            "Blacksmith's Talent",
+            "Sword"
+          ],
+          "life": 20.0
+        },
+        "observer": {
+          "lands": [
+            "Forest",
+            "Plains",
+            "Forest",
+            "Forest",
+            "Uncharted Haven"
+          ],
+          "creatures": [
+            "Intrepid Rabbit",
+            "Intrepid Rabbit"
+          ],
+          "other": [
+            "Innkeeper's Talent"
+          ],
+          "life": 8.0,
+          "hand_size": 5
+        }
+      }
+    },
+    {
+      "step": {
+        "turn": 6,
+        "active_player": "observer",
+        "draws": 0,
+        "departed": [],
+        "hand_size": 5
+      },
+      "board": {
+        "target": {
+          "lands": [
+            "Mountain",
+            "Mountain",
+            "Mountain",
+            "Mountain",
+            "Mountain"
+          ],
+          "creatures": [
+            "Quaketusk Boar"
+          ],
+          "other": [
+            "Blacksmith's Talent",
+            "Sword"
+          ],
+          "life": 20.0
+        },
+        "observer": {
+          "lands": [
+            "Plains",
+            "Forest",
+            "Plains",
+            "Forest",
+            "Forest",
+            "Uncharted Haven"
+          ],
+          "creatures": [
+            "Nettle Guard",
+            "Intrepid Rabbit",
+            "Intrepid Rabbit"
+          ],
+          "other": [
+            "Innkeeper's Talent"
+          ],
+          "life": 8.0,
+          "hand_size": 4
+        }
+      }
+    },
+    {
+      "step": {
+        "turn": 7,
+        "active_player": "target",
+        "draws": 2,
+        "departed": [
+          "Whiskerquill Scribe",
+          "Take Out the Trash"
+        ],
+        "hand_size": 5
+      },
+      "board": {
+        "target": {
+          "lands": [
+            "Mountain",
+            "Mountain",
+            "Mountain",
+            "Mountain",
+            "Mountain"
+          ],
+          "creatures": [
+            "Whiskerquill Scribe"
+          ],
+          "other": [
+            "Sword"
+          ],
+          "life": 20.0
+        },
+        "observer": {
+          "lands": [
+            "Plains",
+            "Forest",
+            "Plains",
+            "Forest",
+            "Forest",
+            "Uncharted Haven"
+          ],
+          "creatures": [
+            "Intrepid Rabbit",
+            "Intrepid Rabbit"
+          ],
+          "other": [
+            "Innkeeper's Talent"
+          ],
+          "life": 8.0,
+          "hand_size": 3
+        }
+      }
+    },
+    {
+      "step": {
+        "turn": 7,
+        "active_player": "observer",
+        "draws": 0,
+        "departed": [],
+        "hand_size": 5
+      },
+      "board": {
+        "target": {
+          "lands": [
+            "Mountain",
+            "Mountain",
+            "Mountain",
+            "Mountain",
+            "Mountain"
+          ],
+          "creatures": [
+            "Whiskerquill Scribe"
+          ],
+          "other": [
+            "Sword"
+          ],
+          "life": 15.0
+        },
+        "observer": {
+          "lands": [
+            "Forest",
+            "Plains",
+            "Forest",
+            "Plains",
+            "Forest",
+            "Forest",
+            "Uncharted Haven"
+          ],
+          "creatures": [
+            "Pileated Provisioner",
+            "Intrepid Rabbit",
+            "Intrepid Rabbit"
+          ],
+          "other": [
+            "Innkeeper's Talent",
+            "Innkeeper's Talent"
+          ],
+          "life": 8.0,
+          "hand_size": 1
+        }
+      }
+    },
+    {
+      "step": {
+        "turn": 8,
+        "active_player": "target",
+        "draws": 1,
+        "departed": [
+          "Plains",
+          "Seedglaive Mentor"
+        ],
+        "hand_size": 4
+      },
+      "board": {
+        "target": {
+          "lands": [
+            "Plains",
+            "Mountain",
+            "Mountain",
+            "Mountain",
+            "Mountain",
+            "Mountain"
+          ],
+          "creatures": [
+            "Seedglaive Mentor",
+            "Whiskerquill Scribe"
+          ],
+          "other": [
+            "Sword"
+          ],
+          "life": 15.0
+        },
+        "observer": {
+          "lands": [
+            "Forest",
+            "Plains",
+            "Forest",
+            "Plains",
+            "Forest",
+            "Forest",
+            "Uncharted Haven"
+          ],
+          "creatures": [
+            "Pileated Provisioner",
+            "Intrepid Rabbit",
+            "Intrepid Rabbit"
+          ],
+          "other": [
+            "Innkeeper's Talent",
+            "Innkeeper's Talent"
+          ],
+          "life": 8.0,
+          "hand_size": 1
+        }
+      }
+    },
+    {
+      "step": {
+        "turn": 8,
+        "active_player": "observer",
+        "draws": 0,
+        "departed": [],
+        "hand_size": 4
+      },
+      "board": {
+        "target": {
+          "lands": [
+            "Plains",
+            "Mountain",
+            "Mountain",
+            "Mountain",
+            "Mountain",
+            "Mountain"
+          ],
+          "creatures": [],
+          "other": [
+            "Sword"
+          ],
+          "life": 6.0
+        },
+        "observer": {
+          "lands": [
+            "Forest",
+            "Plains",
+            "Forest",
+            "Plains",
+            "Forest",
+            "Forest",
+            "Uncharted Haven"
+          ],
+          "creatures": [
+            "Pileated Provisioner",
+            "Pileated Provisioner",
+            "Intrepid Rabbit",
+            "Intrepid Rabbit"
+          ],
+          "other": [
+            "Innkeeper's Talent",
+            "Innkeeper's Talent"
+          ],
+          "life": 8.0,
+          "hand_size": 1
+        }
+      }
+    },
+    {
+      "step": {
+        "turn": 9,
+        "active_player": "target",
+        "draws": 1,
+        "departed": [
+          "Plains",
+          "Alania's Pathmaker"
+        ],
+        "hand_size": 3
+      },
+      "board": {
+        "target": {
+          "lands": [
+            "Plains",
+            "Plains",
+            "Mountain",
+            "Mountain",
+            "Mountain",
+            "Mountain",
+            "Mountain"
+          ],
+          "creatures": [
+            "Alania's Pathmaker"
+          ],
+          "other": [
+            "Sword"
+          ],
+          "life": 6.0
+        },
+        "observer": {
+          "lands": [
+            "Forest",
+            "Plains",
+            "Forest",
+            "Plains",
+            "Forest",
+            "Forest",
+            "Uncharted Haven"
+          ],
+          "creatures": [
+            "Pileated Provisioner",
+            "Pileated Provisioner",
+            "Intrepid Rabbit",
+            "Intrepid Rabbit"
+          ],
+          "other": [
+            "Innkeeper's Talent",
+            "Innkeeper's Talent"
+          ],
+          "life": 8.0,
+          "hand_size": 1
+        }
+      }
+    }
+  ]
+}
