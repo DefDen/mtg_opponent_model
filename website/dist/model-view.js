@@ -21,7 +21,7 @@ export function opponentComparison(frames, index) {
 }
 export function predictionDelta(frames, index, card) {
  const comparison=opponentComparison(frames,index);
- if(!comparison)return null;
+ if(!comparison||frames[comparison.current].prediction_error||frames[comparison.previous].prediction_error)return null;
  return (frames[comparison.current].probabilities[card]||0)-(frames[comparison.previous].probabilities[card]||0);
 }
 export function colorClass(metadata = {}) {
@@ -46,7 +46,7 @@ export function boardEntries(cards, previousCards = []) {
 // Compare the full candidate pool, including cards whose probability fell to zero.
 export function predictionChanges(frames, index, limit = 3) {
  const comparison=opponentComparison(frames,index);
- if(!comparison)return null;
+ if(!comparison||frames[comparison.current].prediction_error||frames[comparison.previous].prediction_error)return null;
  const before = frames[comparison.previous].probabilities, after = frames[comparison.current].probabilities;
  const cards = new Set([...Object.keys(before), ...Object.keys(after)]);
  const changes = [...cards].map(card => ({card, before:before[card]||0, after:after[card]||0,
@@ -57,10 +57,11 @@ export function predictionChanges(frames, index, limit = 3) {
 }
 export function predictionHistory(frames, index, card) {
  return frames.slice(0,index+1).map((frame,i)=>({index:i, turn:frame.step.turn,
-  player:frame.step.active_player, probability:frame.probabilities[card]||0}));
+  player:frame.step.active_player, probability:frame.prediction_error?null:(frame.probabilities[card]||0)}));
 }
 
 export function gameForMethod(game, method) {
  return {...game,frames:game.frames.map(frame=>({...frame,
-  probabilities:frame.methods?.[method] ?? (method==='hand_size'?frame.baseline:frame.probabilities)}))};
+  prediction_error:frame.method_errors?.[method],
+  probabilities:frame.methods&&method in frame.methods?(frame.methods[method]||{}):(method==='hand_size'?frame.baseline:frame.probabilities)}))};
 }

@@ -18,6 +18,7 @@ def fetch(url: str) -> bytes:
 def main() -> None:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--metadata", type=Path, nargs="*", help="Optional cached Scryfall search pages")
+    parser.add_argument("--all-pool", action="store_true", help="Bundle the trained card pool and BLB tokens for arbitrary imports")
     args = parser.parse_args()
     cards = []
     if args.metadata:
@@ -45,7 +46,23 @@ def main() -> None:
             for probabilities in frame.get('methods', {}).values():
                 visible.update(card for card, _ in sorted(probabilities.items(),
                                key=lambda pair: (-pair[1], pair[0]))[:20])
+    if args.all_pool:
+        models = json.loads((ROOT / 'dist/browser-models.json').read_text())
+        visible.update(models['cards'])
+        visible.update(card['name'] for card in cards if card['set'] == 'tblb')
     missing = visible - lookup.keys()
+    if missing and args.all_pool:
+        # BLB Limited can include Special Guests whose printing is outside BLB.
+        for start in range(0, len(missing), 75):
+            batch = sorted(missing)[start:start + 75]
+            request = Request('https://api.scryfall.com/cards/collection',
+                              data=json.dumps({'identifiers': [{'name': c} for c in batch]}).encode(),
+                              headers={**HEADERS, 'Content-Type': 'application/json'})
+            with urlopen(request, timeout=40) as response:
+                extra = json.loads(response.read())
+            lookup.update({card['name']: card for card in extra['data']})
+            time.sleep(0.12)
+        missing = visible - lookup.keys()
     if missing:
         raise ValueError(f"Missing Scryfall metadata: {sorted(missing)}")
     asset_dir = ROOT / "dist/assets/cards"
